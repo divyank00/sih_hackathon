@@ -1,9 +1,13 @@
 import 'dart:collection';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sih_hackathon/Screens/Home.dart';
@@ -42,16 +46,31 @@ class _CInfo extends State<CInfo> {
 
   File _image;
 
-  Future getImage() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-
+  Future getImagefromCam(File file) async {
+    var image = await ImagePicker.pickImage(
+        source: ImageSource.camera);
     setState(() {
-      _image = image;
+      if (image == null)
+        _image = file;
+      else
+        _image = image;
+    });
+  }
+
+  Future getImagefromGal(File file) async {
+    var image = await ImagePicker.pickImage(
+      source: ImageSource.gallery,);
+    setState(() {
+      if (image == null)
+        _image = file;
+      else
+        _image = image;
     });
   }
 
   @override
   void initState() {
+    _image = null;
     flag = false;
     super.initState();
   }
@@ -268,7 +287,7 @@ class _CInfo extends State<CInfo> {
                 Row(
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.only(top: 40.0, left: 10),
+                      padding: const EdgeInsets.only(top: 30.0, left: 10),
                       child: Text(
                         'Identification',
                         style: TextStyle(
@@ -280,7 +299,7 @@ class _CInfo extends State<CInfo> {
                     ),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 40, left: 5, right: 10),
+                        padding: EdgeInsets.only(top: 30, left: 5, right: 10),
                         child: Divider(
                           color: Colors.red.shade600,
                           thickness: 1.5,
@@ -360,16 +379,83 @@ class _CInfo extends State<CInfo> {
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: _image == null ? Icon(Icons.add) : Image.file(_image),
-                  onPressed: () {
-                    getImage();
-                  },
-                  tooltip: 'Pick Image',
+      Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top: 30.0, left: 10),
+            child: Text(
+              'Facial Recognition',
+              style: TextStyle(
+                color: Colors.red.shade600,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(top: 30, left: 5, right: 10),
+              child: Divider(
+                color: Colors.red.shade600,
+                thickness: 1.5,
+              ),
+            ),
+          )
+        ],
+      ),
+      Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 5.0),
+            child: Icon(
+              Icons.info_outline,
+              color: Colors.grey.shade500,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 5),
+            child: Container(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width - 40,
+              child: Text(
+                'This section is to identify whether the Accident Victim is someone else.',
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      Padding(
+        padding: EdgeInsets.only(top: 15, left: 10, right: 10),
+        child: Center(
+          child: Container(
+              child: FlatButton(
+                onPressed: () {
+                  _showD(context);
+                },
+                child: _image == null ? Icon(Icons.face,
+                color: Colors.grey.shade500,
+                size: 150,) : FittedBox(
+              child: Image.file(_image), fit: BoxFit.cover,),
+      ),
+      decoration: BoxDecoration(
+          border: Border.all(
+              color: Colors.grey.shade500,
+              width: 3
+          )
+      ),
+    ),
+    ),
                 ),
                 Center(
                   child: Padding(
-                    padding: EdgeInsets.all(30),
+                    padding: EdgeInsets.all(40),
                     child: Container(
                       height: 50,
                       child: RaisedButton(
@@ -419,6 +505,65 @@ class _CInfo extends State<CInfo> {
     User_UID.document(_firebaseUser.uid).updateData(data).then((user) {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Home()));
+    });
+  }
+  Future<void> _showD(BuildContext context) async {
+
+    return showDialog(
+        context: context,
+        barrierDismissible: true, // user must tap button!
+        builder: (BuildContext context)
+    {
+      return AlertDialog(
+        title: Text('Photo'),
+        titlePadding: EdgeInsets.only(left: 24,right: 24,top: 24),
+        actions: <Widget>[
+          Column(
+            children: <Widget>[
+          Container(
+            padding:EdgeInsets.only(left: 0),
+            width: 300,
+            height: 50,
+            child: ListTile(
+              leading: Icon(Icons.camera_enhance),
+              title: Text('Camera'),
+              onTap: () {
+                getImagefromCam(_image);
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Container(
+            width: 300,
+            height: 50,
+            child: ListTile(
+              leading: Icon(Icons.image),
+              title: Text('Gallery'),
+              onTap: () {
+                getImagefromGal(_image);
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          _image==null?SizedBox(height: 0,):
+          Container(
+            width: 300,
+            height: 50,
+            child: ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('Remove'),
+                onTap: () {
+                  setState(() {
+                    _image = null;
+                  });
+                  Navigator.pop(context);
+                }
+            ),
+          )
+            ],
+          )
+        ],
+      );
     });
   }
 }
