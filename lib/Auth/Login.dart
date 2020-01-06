@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sih_hackathon/Auth/SignUp.dart';
+import 'package:sih_hackathon/Info/CInfo.dart';
+import 'package:sih_hackathon/Info/MInfo.dart';
+import 'package:sih_hackathon/Info/PInfo.dart';
 import 'package:sih_hackathon/Screens/Home.dart';
 
 class Login extends StatefulWidget {
@@ -233,14 +236,46 @@ class _Login extends State<Login> {
     await _firebaseAuth
         .signInWithEmailAndPassword(email: mail, password: password)
         .then((authResult) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Home()));
+      nav(context);
     }).catchError((e) {
       Fluttertoast.showToast(msg: e.toString());
       _firebaseAuth.signOut();
       setState(() {
         flag = false;
       });
+    });
+  }
+
+  Future<void> nav(BuildContext context) async {
+    FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
+    User_UID.document(_firebaseUser.uid).snapshots().listen((datasnapshot) {
+      if (datasnapshot.data.containsKey('name') &&
+          datasnapshot.data.containsKey('bloodG') &&
+          datasnapshot.data.containsKey('Car_Model')) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (BuildContext context) {
+          return Home();
+        }));
+      }
+      else if (datasnapshot.data.containsKey('name') &&
+          datasnapshot.data.containsKey('bloodG')) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (BuildContext context) {
+          return CInfo();
+        }));
+      }
+      else if (datasnapshot.data.containsKey('name')) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (BuildContext context) {
+          return MInfo();
+        }));
+      }
+      else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (BuildContext context) {
+          return PInfo();
+        }));
+      }
     });
   }
 }
