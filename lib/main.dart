@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sih_hackathon/Info/CInfo.dart';
 import 'package:sih_hackathon/Info/MInfo.dart';
 import 'package:sih_hackathon/Info/PInfo.dart';
 
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Navigation",
-      home: MInfo(),
+      home: CInfo(),
     );
   }
 }

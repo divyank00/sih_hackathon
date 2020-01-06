@@ -67,7 +67,7 @@ class _SignUp extends State<SignUp> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(top: 40, left: 10, right: 10),
+                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
                 child: Form(
                   key: _contactKey,
                   child: TextFormField(
@@ -114,7 +114,7 @@ class _SignUp extends State<SignUp> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 40, left: 10, right: 10),
+                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
                 child: Form(
                   key: _passKey,
                   child: TextFormField(
@@ -178,7 +178,7 @@ class _SignUp extends State<SignUp> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 40, left: 10, right: 10),
+                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
                 child: Form(
                   key: _repassKey,
                   child: TextFormField(
@@ -241,7 +241,7 @@ class _SignUp extends State<SignUp> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 40, left: 10, right: 10),
+                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
                 child: Form(
                   key: _IDKey,
                   child: TextFormField(
@@ -300,7 +300,7 @@ class _SignUp extends State<SignUp> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 12,bottom: 30),
+                padding: EdgeInsets.all(30),
                 child: Container(
                   height: 50,
                   child: RaisedButton(

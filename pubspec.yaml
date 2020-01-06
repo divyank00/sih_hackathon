@@ -29,7 +29,7 @@ dependencies:
   email_validator:
   barcode_scan:
   fluttertoast:
-
+  image_picker:
 
 dev_dependencies:
   flutter_test:
