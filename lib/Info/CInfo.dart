@@ -4,34 +4,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sih_hackathon/Info/CInfo.dart';
 
-class MInfo extends StatefulWidget {
+class CInfo extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _MInfo();
+    return _CInfo();
   }
 }
 
-class _MInfo extends State<MInfo> {
+class _CInfo extends State<CInfo> {
   var _formKey = GlobalKey<FormState>();
 
-  TextEditingController bloodController = TextEditingController();
-  TextEditingController allergiesontroller = TextEditingController();
-  TextEditingController medicationController = TextEditingController();
-  TextEditingController medNotesController = TextEditingController();
-  TextEditingController OrganDController = TextEditingController();
-  TextEditingController addMController = TextEditingController();
+  TextEditingController cMController = TextEditingController();
+  TextEditingController cNController = TextEditingController();
+  TextEditingController cCController = TextEditingController();
+  TextEditingController cSController = TextEditingController();
 
-  String blood, aller, medic, medN, ODonor,addM;
+  String cM, cN, cC, cS;
 
-  final FocusNode _bloodFocus = FocusNode();
-  final FocusNode _allerFocus = FocusNode();
-  final FocusNode _medicFocus = FocusNode();
-  final FocusNode _medNotesFocus = FocusNode();
-  final FocusNode _OrganDonorFocus = FocusNode();
-  final FocusNode _AddMFocus = FocusNode();
+  final FocusNode _cMFocus = FocusNode();
+  final FocusNode _cNFocus = FocusNode();
+  final FocusNode _cCFocus = FocusNode();
+  final FocusNode _cSFocus = FocusNode();
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final Firestore _firestore = Firestore.instance;
@@ -51,7 +46,7 @@ class _MInfo extends State<MInfo> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Medical Information'),
+        title: Text('Vehicle Information'),
       ),
       body: SingleChildScrollView(
           child: Form(
@@ -67,24 +62,24 @@ class _MInfo extends State<MInfo> {
                     ),
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
-                    focusNode: _bloodFocus,
-                    controller: bloodController,
+                    focusNode: _cMFocus,
+                    controller: cMController,
                     onSaved: (value) {
-                      blood = value;
+                      cM = value;
                     },
                     validator: (value) {
                       if (value.isEmpty) return 'This field cannot be empty!';
                       return null;
                     },
                     onFieldSubmitted: (term) {
-                      _fieldFocusChange(context, _bloodFocus, _allerFocus);
+                      _fieldFocusChange(context, _cMFocus, _cNFocus);
                     },
                     decoration: InputDecoration(
                       prefixIcon: IconButton(
                         icon: Image.asset('images/drop.png', height: 25,),
                         onPressed: null,
                       ),
-                      hintText: 'For example, O+',
+                      hintText: 'For example, Mahindra XUV300',
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black, width: 1.0),
                       ),
@@ -98,36 +93,35 @@ class _MInfo extends State<MInfo> {
                       focusedErrorBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.red, width: 1.0),
                       ),
-                      labelText: 'Blood Group',
+                      labelText: 'Car Model',
                       labelStyle: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 15, left: 10, right: 10),
+                  padding: EdgeInsets.only(top: 10, left: 10, right: 10),
                   child: TextFormField(
-                    maxLines: null,
                     style: TextStyle(
                       color: Colors.black,
                     ),
                     keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.newline,
+                    textInputAction: TextInputAction.next,
                     validator: (String value) {
                       return null;
                     },
-                    focusNode: _allerFocus,
-                    controller: allergiesontroller,
+                    focusNode: _cNFocus,
+                    controller: cNController,
                     onSaved: (value) {
-                      aller = value;
+                      cN = value;
                     },
                     onFieldSubmitted: (term) {
-                      _fieldFocusChange(context, _allerFocus, _medicFocus);
+                      _fieldFocusChange(context, _cNFocus, _cCFocus);
                     },
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.do_not_disturb_alt,
                       ),
-                      hintText: 'For example, peanuts',
+                      hintText: 'For example, MH01AE',
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black, width: 1.0),
                       ),
@@ -147,7 +141,7 @@ class _MInfo extends State<MInfo> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 15, left: 10, right: 10),
+                  padding: EdgeInsets.only(top: 10, left: 10, right: 10),
                   child: TextFormField(
                     style: TextStyle(
                       color: Colors.black,
@@ -192,7 +186,7 @@ class _MInfo extends State<MInfo> {
                 ),
 
                 Padding(
-                  padding: EdgeInsets.only(top: 15, left: 10, right: 10),
+                  padding: EdgeInsets.only(top: 10, left: 10, right: 10),
                   child: TextFormField(
                     maxLines: null,
                     style: TextStyle(
@@ -234,7 +228,7 @@ class _MInfo extends State<MInfo> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 15, left: 10, right: 10),
+                  padding: EdgeInsets.only(top: 10, left: 10, right: 10),
                   child: TextFormField(
                     style: TextStyle(
                       color: Colors.black,
@@ -278,7 +272,7 @@ class _MInfo extends State<MInfo> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 15, left: 10, right: 10),
+                  padding: EdgeInsets.only(top: 10, left: 10, right: 10),
                   child: TextFormField(
                     style: TextStyle(
                       color: Colors.black,
@@ -299,7 +293,7 @@ class _MInfo extends State<MInfo> {
                     },
                     decoration: InputDecoration(
                       prefixIcon: Icon(
-                        Icons.add
+                          Icons.add
                       ),
                       hintText: 'Additional Information for Emergency',
                       enabledBorder: OutlineInputBorder(
@@ -376,10 +370,10 @@ class _MInfo extends State<MInfo> {
     if (addMed.isNotEmpty)
       data.putIfAbsent('Additional_med_notes', () => addMed);
     else
-      data.putIfAbsent('Add_med_notes', () => 'None');
-    User_UID.document(_firebaseUser.uid).updateData(data).then((user) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => CInfo()));
-    });
+      data.putIfAbsent('Additional_med_notes', () => 'None');
+//    User_UID.document(_firebaseUser.uid).updateData(data).then((user) {
+//      Navigator.pushReplacement(
+//          context, MaterialPageRoute(builder: (context) => MInfo()));
+//    });
   }
 }

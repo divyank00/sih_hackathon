@@ -416,35 +416,35 @@ class _SignUp extends State<SignUp> {
   }
 
   Sign_Up(String contact, String password) async {
-//    bool flag1 = true;
-//    await _firebaseAuth.createUserWithEmailAndPassword(
-//        email: contact, password: password).catchError((e) {
-//      Fluttertoast.showToast(msg: e.toString());
-//      _firebaseAuth.signOut();
-//      setState(() {
-//        flag = false;
-//      });
-//      flag1 = false;
-//    });
-//    if (flag1) {
-//      FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
-//      Map data = new HashMap<String, String>();
-//      data.putIfAbsent('E-Mail', () => contact);
-//      data.putIfAbsent('SOS_ID', () => SOS_ID);
-//      User_UID
-//          .document(_firebaseUser.uid)
-//          .setData(data)
-//          .then((user) {
-//        Navigator.pushReplacement(context,
-//            MaterialPageRoute(builder: (context) => PInfo()));
-//      });
-//    }
-    await _firebaseAuth.signInWithEmailAndPassword(
+    bool flag1 = true;
+    await _firebaseAuth.createUserWithEmailAndPassword(
         email: contact, password: password).catchError((e) {
       Fluttertoast.showToast(msg: e.toString());
+      _firebaseAuth.signOut();
+      setState(() {
+        flag = false;
+      });
+      flag1 = false;
     });
-    Navigator.pushReplacement(context,
+    if (flag1) {
+      FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
+      Map data = new HashMap<String, String>();
+      data.putIfAbsent('E-Mail', () => contact);
+      data.putIfAbsent('SOS_ID', () => SOS_ID);
+      User_UID
+          .document(_firebaseUser.uid)
+          .setData(data)
+          .then((user) {
+        Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => PInfo()));
+      });
+    }
+//    await _firebaseAuth.signInWithEmailAndPassword(
+//        email: contact, password: password).catchError((e) {
+//      Fluttertoast.showToast(msg: e.toString());
+//    });
+//    Navigator.pushReplacement(context,
+//            MaterialPageRoute(builder: (context) => PInfo()));
   }
 }
 

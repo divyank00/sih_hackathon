@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sih_hackathon/Info/MInfo.dart';
 import 'package:sih_hackathon/Info/PInfo.dart';
 
 import 'Auth/SignUp.dart';
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Navigation",
-      home: SignUp(),
+      home: MInfo(),
     );
   }
 }

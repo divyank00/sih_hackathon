@@ -42,7 +42,6 @@ class _PInfo extends State<PInfo> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final Firestore _firestore = Firestore.instance;
 
-  final CollectionReference SOS_UID = _firestore.collection("SOS");
   final CollectionReference User_UID = _firestore.collection("Users");
 
   bool flag;
@@ -490,7 +489,7 @@ class _PInfo extends State<PInfo> {
                   color: Colors.black,
                 ),
                 keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
+                textInputAction: TextInputAction.done,
                 validator: (String value) {
                   if (emergency3nController.text.isNotEmpty) {
                     if (value.isEmpty) return 'This field cannot be empty!';
