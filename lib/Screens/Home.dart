@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sih_hackathon/Auth/Login.dart';
@@ -11,6 +13,8 @@ class Home extends StatefulWidget{
 }
 
 class _Home extends State<Home>{
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -24,11 +28,13 @@ class _Home extends State<Home>{
             height: 50,
             child: RaisedButton(
                 child: Text('Log Out'),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                        return Login();
-                      }));
+                onPressed: () async {
+                  await _firebaseAuth.signOut().then((user) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                          return Login();
+                        }));
+                  });
                 }),
           )
       ),
