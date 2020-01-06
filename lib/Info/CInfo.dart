@@ -4,13 +4,12 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sih_hackathon/Screens/Home.dart';
+
 
 class CInfo extends StatefulWidget {
   @override
@@ -469,7 +468,7 @@ class _CInfo extends State<CInfo> {
                             }
                           });
                           if (flag)
-                            await pDetails(cM, cN, cC, cS, iden);
+                            await pDetails(cM, cN, cC, cS, iden, _image);
                         },
                         child: !flag
                             ? Text('Done')
@@ -491,24 +490,37 @@ class _CInfo extends State<CInfo> {
   }
 
   pDetails(String carM, String carN, String carC, String carS,
-      String IM) async {
+      String IM, File file) async {
     FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
     Map data = new HashMap<String, String>();
-    data.putIfAbsent('Model', () => carM);
-    data.putIfAbsent('Number', () => carN);
-    data.putIfAbsent('Color', () => carC);
-    data.putIfAbsent('Seater', () => carS);
+    data.putIfAbsent('Car_Model', () => carM);
+    data.putIfAbsent('Car_Number', () => carN);
+    data.putIfAbsent('Car_Color', () => carC);
+    data.putIfAbsent('Car_Seater', () => carS);
     if (IM.isNotEmpty)
       data.putIfAbsent('Identification', () => IM);
     else
       data.putIfAbsent('Identification', () => 'None');
+    if (file != null) {
+      await uploadFile(file);
+      data.putIfAbsent('profilePath', () => 'Users/${_firebaseUser.uid}');
+    }
     User_UID.document(_firebaseUser.uid).updateData(data).then((user) {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Home()));
     });
   }
-  Future<void> _showD(BuildContext context) async {
 
+  Future uploadFile(File file) async {
+    FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
+    StorageReference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('Users/${_firebaseUser.uid}');
+    StorageUploadTask uploadTask = storageReference.putFile(file);
+    await uploadTask.onComplete;
+  }
+
+  Future<void> _showD(BuildContext context) async {
     return showDialog(
         context: context,
         barrierDismissible: true, // user must tap button!

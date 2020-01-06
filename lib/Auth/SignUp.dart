@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sih_hackathon/Auth/Login.dart';
 import 'package:sih_hackathon/Info/PInfo.dart';
 
 class SignUp extends StatefulWidget {
@@ -19,22 +20,22 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUp extends State<SignUp> {
-  final _contactKey = GlobalKey<FormState>();
+  final _mailKey = GlobalKey<FormState>();
   final _passKey = GlobalKey<FormState>();
   final _repassKey = GlobalKey<FormState>();
   final _IDKey = GlobalKey<FormState>();
 
 
-  TextEditingController contactController = TextEditingController();
+  TextEditingController mailController = TextEditingController();
   TextEditingController passController = TextEditingController();
   TextEditingController repassController = TextEditingController();
   TextEditingController IDController = TextEditingController();
 
-  String contact, password, repassword, SOS_ID;
+  String mail, password, repassword, SOS_ID;
 
   bool passwordVis, repasswordVis;
 
-  final FocusNode _contactFocus = FocusNode();
+  final FocusNode _mailFocus = FocusNode();
   final FocusNode _passFocus = FocusNode();
   final FocusNode _repassFocus = FocusNode();
   final FocusNode _IDFocus = FocusNode();
@@ -69,7 +70,7 @@ class _SignUp extends State<SignUp> {
               Padding(
                 padding: EdgeInsets.only(top: 30, left: 10, right: 10),
                 child: Form(
-                  key: _contactKey,
+                  key: _mailKey,
                   child: TextFormField(
                     style: TextStyle(
                       color: Colors.black,
@@ -81,13 +82,13 @@ class _SignUp extends State<SignUp> {
                       if (!isEmailValid(value)) return 'Invalid E-Mail!';
                       return null;
                     },
-                    focusNode: _contactFocus,
-                    controller: contactController,
+                    focusNode: _mailFocus,
+                    controller: mailController,
                     onSaved: (value) {
-                      contact = value;
+                      mail = value;
                     },
                     onFieldSubmitted: (term) {
-                      _fieldFocusChange(context, _contactFocus, _passFocus);
+                      _fieldFocusChange(context, _mailFocus, _passFocus);
                     },
                     decoration: InputDecoration(
                       prefixIcon: Icon(
@@ -310,20 +311,20 @@ class _SignUp extends State<SignUp> {
                       });
                       result = await isIDValid(IDController.text);
                       setState(() {
-                        if (_contactKey.currentState.validate() &&
+                        if (_mailKey.currentState.validate() &&
                             _passKey.currentState.validate() &&
                             _repassKey.currentState.validate() &&
                             _IDKey.currentState.validate() &&
                             result) {
-                          _contactKey.currentState.save();
+                          _mailKey.currentState.save();
                           _passKey.currentState.save();
                           _repassKey.currentState.save();
                           _IDKey.currentState.save();
                           flag = true;
                         }
                         else {
-                          if (!_contactKey.currentState.validate()) {
-                            contactController.clear();
+                          if (!_mailKey.currentState.validate()) {
+                            mailController.clear();
                             passController.clear();
                             repassController.clear();
                             IDController.clear();
@@ -352,7 +353,7 @@ class _SignUp extends State<SignUp> {
                         }
                       });
                       if (flag)
-                        await Sign_Up(contact, password);
+                        await Sign_Up(mail, password);
                     },
                     child: !flag
                         ? Text('Sign Up')
@@ -360,6 +361,23 @@ class _SignUp extends State<SignUp> {
                   ),
                 ),
               ),
+              SizedBox(
+                height: 80,
+              ),
+              Text('Already Registered?'),
+              Container(
+                padding: EdgeInsets.only(top: 5),
+                height: 50,
+                child: RaisedButton(
+                    child: Text('Sign In'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return Login();
+                          }));
+                    }),
+              )
             ],
           )),
     );
@@ -415,10 +433,10 @@ class _SignUp extends State<SignUp> {
     }
   }
 
-  Sign_Up(String contact, String password) async {
+  Sign_Up(String mail, String password) async {
     bool flag1 = true;
     await _firebaseAuth.createUserWithEmailAndPassword(
-        email: contact, password: password).catchError((e) {
+        email: mail, password: password).catchError((e) {
       Fluttertoast.showToast(msg: e.toString());
       _firebaseAuth.signOut();
       setState(() {
@@ -429,7 +447,7 @@ class _SignUp extends State<SignUp> {
     if (flag1) {
       FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
       Map data = new HashMap<String, String>();
-      data.putIfAbsent('E-Mail', () => contact);
+      data.putIfAbsent('E-Mail', () => mail);
       data.putIfAbsent('SOS_ID', () => SOS_ID);
       User_UID
           .document(_firebaseUser.uid)

@@ -3,6 +3,7 @@ import 'package:sih_hackathon/Info/CInfo.dart';
 import 'package:sih_hackathon/Info/MInfo.dart';
 import 'package:sih_hackathon/Info/PInfo.dart';
 
+import 'Auth/Login.dart';
 import 'Auth/SignUp.dart';
 
 void main() => runApp(MyApp());
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Navigation",
-      home: CInfo(),
+      home: Login(),
     );
   }
 }

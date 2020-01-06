@@ -26,6 +26,7 @@ dependencies:
   firebase_auth:
   google_sign_in:
   cloud_firestore:
+  firebase_storage:
   email_validator:
   barcode_scan:
   fluttertoast:
