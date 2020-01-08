@@ -142,7 +142,7 @@ class _PInfo extends State<PInfo> {
                 textInputAction: TextInputAction.next,
                 validator: (String value) {
                   if (value.isEmpty) return 'This field cannot be empty!';
-                  if (value.length < 10) return 'Invalid Phone Number!';
+                  if (value.length != 10) return 'Invalid Phone Number!';
                   return null;
                 },
                 focusNode: _contactFocus,
@@ -306,7 +306,7 @@ class _PInfo extends State<PInfo> {
                 textInputAction: TextInputAction.next,
                 validator: (String value) {
                   if (value.isEmpty) return 'This field cannot be empty!';
-                  if (value.length < 10) return 'Invalid Phone Number!';
+                  if (value.length != 10) return 'Invalid Phone Number!';
                   return null;
                 },
                 focusNode: _eme1cFocus,
@@ -399,7 +399,7 @@ class _PInfo extends State<PInfo> {
                 textInputAction: TextInputAction.next,
                 validator: (String value) {
                   if (value.isEmpty) return 'This field cannot be empty!';
-                  if (value.length < 10) return 'Invalid Phone Number!';
+                  if (value.length != 10) return 'Invalid Phone Number!';
                   return null;
                 },
                 focusNode: _eme2cFocus,
@@ -493,7 +493,7 @@ class _PInfo extends State<PInfo> {
                 validator: (String value) {
                   if (emergency3nController.text.isNotEmpty) {
                     if (value.isEmpty) return 'This field cannot be empty!';
-                    if (value.length < 10) return 'Invalid Phone Number!';
+                    if (value.length != 10) return 'Invalid Phone Number!';
                   }
                   if(value.isNotEmpty && value.length<10) return 'Invalid Phone Number!';
                   return null;

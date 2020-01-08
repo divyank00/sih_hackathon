@@ -446,6 +446,18 @@ class _SignUp extends State<SignUp> {
     });
     if (flag1) {
       FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
+      List<String> list;
+      Map data1 = new HashMap<String, List<String>>();
+      Firestore.instance.collection('SOS').document(SOS_ID).get().then((
+          documentSS) {
+        if (documentSS.exists)
+          list = List.from(documentSS['users']);
+        list.add(_firebaseUser.uid);
+        data1.putIfAbsent('users', () => list);
+        Firestore.instance.collection('SOS').document(SOS_ID).updateData(data1);
+      });
+
+
       Map data = new HashMap<String, String>();
       data.putIfAbsent('E-Mail', () => mail);
       data.putIfAbsent('SOS_ID', () => SOS_ID);
@@ -457,12 +469,6 @@ class _SignUp extends State<SignUp> {
             MaterialPageRoute(builder: (context) => PInfo()));
       });
     }
-//    await _firebaseAuth.signInWithEmailAndPassword(
-//        email: contact, password: password).catchError((e) {
-//      Fluttertoast.showToast(msg: e.toString());
-//    });
-//    Navigator.pushReplacement(context,
-//            MaterialPageRoute(builder: (context) => PInfo()));
   }
 }
 
