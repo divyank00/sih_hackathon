@@ -34,9 +34,8 @@ dependencies:
   image_picker:
   firebase_messaging:
   geolocator:
-#  url_launcher:
   map_launcher:
-
+  audio_service:
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +59,7 @@ flutter:
     - images/drop.png
     - images/med.png
     - images/heart.png
+    - audio/ring.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

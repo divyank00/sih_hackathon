@@ -111,7 +111,7 @@ class _Home extends State<Home>{
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 return Container(
-                  height: 230,
+                  height: 300,
                   child: new Column(
                     children: snapshot.data.documents.map((
                         DocumentSnapshot document) {
