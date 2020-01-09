@@ -448,13 +448,20 @@ class _SignUp extends State<SignUp> {
       FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
       List<String> list;
       Map data1 = new HashMap<String, List<String>>();
+      Map data2= new HashMap<String, bool>();
+      Map data3= new HashMap<String, double>();
       Firestore.instance.collection('SOS').document(SOS_ID).get().then((
           documentSS) {
         if (documentSS.exists)
           list = List.from(documentSS['users']);
         list.add(_firebaseUser.uid);
         data1.putIfAbsent('users', () => list);
+        data2.putIfAbsent('getLocation', ()=>false);
+        data3.putIfAbsent('Longitude', ()=>null);
+        data3.putIfAbsent('Latitude', ()=>null);
         Firestore.instance.collection('SOS').document(SOS_ID).updateData(data1);
+        Firestore.instance.collection('SOS').document(SOS_ID).updateData(data2);
+        Firestore.instance.collection('SOS').document(SOS_ID).updateData(data3);
       });
 
 
