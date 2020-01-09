@@ -18,6 +18,21 @@
     <string>Privacy - Photo Library Usage Description<string>
    	<key>NSCameraUsageDescription</key>
     <string>Camera permission is required for QR scanning & Privacy - Camera Usage Description</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>comgooglemaps</string>
+        <string>baidumap</string>
+        <string>iosamap</string>
+        <string>waze</string>
+        <string>yandexmaps</string>
+        <string>yandexnavi</string>
+    </array>
+    <string>When in use permissions</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>always permissions</string>
+    <key>NSLocationAlwaysAndWhenInUsageDescription</key>
+    <string>Always and in usage permissions</string>
     <key>NSMicrophoneUsageDescription</key>
    	<string>Privacy - Microphone Usage Description<string>
 	<key>CFBundleShortVersionString</key>
