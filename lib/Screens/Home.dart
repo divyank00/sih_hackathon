@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -81,13 +83,29 @@ class _Home extends State<Home>{
 
   Placemark location;
 
-  bool flag, flag1, flag2;
+  bool flag, flag1, flag2, temp, temp1;
 
+
+  String localFilePath;
+
+  static AudioPlayer audioPlayer = AudioPlayer();
+  AudioCache audioCache = new AudioCache(fixedPlayer: audioPlayer);
+
+  play() {
+    temp = true;
+    audioCache.loop('ring.mp3', stayAwake: true, isNotification: true);
+  }
+
+  stop() {
+    audioPlayer.stop();
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    temp = false;
+    temp1 = true;
     flag = false;
     flag1 = false;
     flag2 = false;
@@ -116,13 +134,22 @@ class _Home extends State<Home>{
                     children: snapshot.data.documents.map((
                         DocumentSnapshot document) {
                       if (document.exists) {
-                        if (document['users'] != null &&
-                            document['flag'] == true) {
+                        if (document['users'] != null) {
                           list = List<String>.from(document['users']);
                           if (list.contains(UID)) {
-                            long = document['Longitude'];
-                            lat = document['Latitude'];
-                            return cardB();
+                            if (document['flag'] == true) {
+                              long = document['Longitude'];
+                              lat = document['Latitude'];
+                              if (temp1)
+                                play();
+                              return cardB();
+                            }
+                            else {
+                              if (temp) {
+                                stop();
+                                temp = false;
+                              }
+                            }
                           }
                         }
                       }
@@ -325,40 +352,62 @@ class _Home extends State<Home>{
           SizedBox(
             height: 0,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              width: 130,
-              child: RaisedButton(
-                onPressed: () async {
-                  if (await MapLauncher.isMapAvailable(MapType.google)) {
-                    await MapLauncher.launchMap(
-                      mapType: MapType.google,
-                      coords: Coords(lat, long),
-                      title: 'Accident Spot',
-                      description: 'Your car is here!',
-                    );
-                  }
-                  else if (await MapLauncher.isMapAvailable(MapType.apple)) {
-                    await MapLauncher.launchMap(
-                      mapType: MapType.apple,
-                      coords: Coords(lat, long),
-                      title: 'Accident Spot',
-                      description: 'Your car is here!',
-                    );
-                  }
-                  else {
-                    final availableMaps = await MapLauncher.installedMaps;
-                    await availableMaps.first.showMarker(
-                      coords: Coords(lat, long),
-                      title: "Accident Spot",
-                      description: "Your car is here!",
-                    );
-                  }
-                },
-                child: Text('Navigate'),
+          Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: 130,
+                  child: RaisedButton(
+                    onPressed: () async {
+                      if (await MapLauncher.isMapAvailable(MapType.google)) {
+                        await MapLauncher.launchMap(
+                          mapType: MapType.google,
+                          coords: Coords(lat, long),
+                          title: 'Accident Spot',
+                          description: 'Your car is here!',
+                        );
+                      }
+                      else
+                      if (await MapLauncher.isMapAvailable(MapType.apple)) {
+                        await MapLauncher.launchMap(
+                          mapType: MapType.apple,
+                          coords: Coords(lat, long),
+                          title: 'Accident Spot',
+                          description: 'Your car is here!',
+                        );
+                      }
+                      else {
+                        final availableMaps = await MapLauncher.installedMaps;
+                        await availableMaps.first.showMarker(
+                          coords: Coords(lat, long),
+                          title: "Accident Spot",
+                          description: "Your car is here!",
+                        );
+                      }
+                    },
+                    child: Text('Navigate'),
+                  ),
+                ),
               ),
-            ),
+              Container(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                    icon: Image.asset('images/silent.jpg', color: Colors.white),
+                    tooltip: 'Silent',
+                    splashColor: temp1 ? Colors.white : Colors.red.shade900,
+                    highlightColor: temp1 ? Colors.white : Colors.red.shade900,
+                    onPressed: () {
+                      if (temp1)
+                        stop();
+                      setState(() {
+                        temp1 = false;
+                      });
+                    }
+                ),
+              ),
+            ],
           ),
         ],
       ),

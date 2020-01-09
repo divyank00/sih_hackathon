@@ -36,6 +36,7 @@ dependencies:
   geolocator:
   map_launcher:
   audio_service:
+  audioplayers:
 
 dev_dependencies:
   flutter_test:
@@ -59,7 +60,8 @@ flutter:
     - images/drop.png
     - images/med.png
     - images/heart.png
-    - audio/ring.mp3
+    - images/silent.jpg
+    - assets/ring.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
