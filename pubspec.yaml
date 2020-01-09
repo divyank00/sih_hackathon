@@ -35,6 +35,7 @@ dependencies:
   firebase_messaging:
   geolocator:
 #  url_launcher:
+  map_launcher:
 
 
 dev_dependencies:
