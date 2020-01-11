@@ -33,32 +33,61 @@ class _Flash extends State<Flash> {
       }));
     } else {
       User_UID.document(_firebaseUser.uid).snapshots().listen((datasnapshot) {
-        if (datasnapshot.data.containsKey('name') &&
-            datasnapshot.data.containsKey('bloodG') &&
-            datasnapshot.data.containsKey('Car_Model')) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-            return Home();
-          }));
-        } else if (datasnapshot.data.containsKey('name') &&
-            datasnapshot.data.containsKey('bloodG')) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-            return CInfo();
-          }));
-        } else if (datasnapshot.data.containsKey('name')) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-            return MInfo();
-          }));
-        } else {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-            return PInfo();
-          }));
+        if(datasnapshot.data['SOS_ID']!=null) {
+          if (datasnapshot.data.containsKey('name') &&
+              datasnapshot.data.containsKey('bloodG') &&
+              datasnapshot.data.containsKey('Car_Model')) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return Home();
+                }));
+          } else if (datasnapshot.data.containsKey('name') &&
+              datasnapshot.data.containsKey('bloodG')) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return CInfo(1);
+                }));
+          } else if (datasnapshot.data.containsKey('name')) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return MInfo(1);
+                }));
+          } else {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return PInfo(1);
+                }));
+          }
+        }
+        else{
+          if (datasnapshot.data.containsKey('name') &&
+              datasnapshot.data.containsKey('bloodG') &&
+              datasnapshot.data.containsKey('Car_Model')) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return Home();
+                }));
+          } else if (datasnapshot.data.containsKey('name') &&
+              datasnapshot.data.containsKey('bloodG')) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return CInfo(0);
+                }));
+          } else if (datasnapshot.data.containsKey('name')) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return MInfo(0);
+                }));
+          } else {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+                  return PInfo(0);
+                }));
+          }
         }
       });
     }
+
   }
 
   @override

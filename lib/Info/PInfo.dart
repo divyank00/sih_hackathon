@@ -6,7 +6,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sih_hackathon/Info/MInfo.dart';
 
+int ii;
+
 class PInfo extends StatefulWidget {
+  PInfo(int i) {
+    ii = i;
+  }
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -57,7 +63,10 @@ class _PInfo extends State<PInfo> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Emergency Information'),
+        automaticallyImplyLeading: false,
+        title: Text('Emergency Information', style: TextStyle(
+        ),),
+        backgroundColor: Colors.red.shade900,
       ),
       body: SingleChildScrollView(
           child: Form(
@@ -112,6 +121,7 @@ class _PInfo extends State<PInfo> {
                 decoration: InputDecoration(
                   prefixIcon: Icon(
                     Icons.person,
+                    color: Colors.black,
                   ),
                   hintText: 'Enter Full Name',
                   enabledBorder: OutlineInputBorder(
@@ -156,6 +166,7 @@ class _PInfo extends State<PInfo> {
                 decoration: InputDecoration(
                   prefixIcon: Icon(
                     Icons.phone,
+                    color: Colors.black,
                   ),
                   hintText: 'Enter Phone Number',
                   enabledBorder: OutlineInputBorder(
@@ -200,6 +211,7 @@ class _PInfo extends State<PInfo> {
                 decoration: InputDecoration(
                   prefixIcon: Icon(
                     Icons.home,
+                    color: Colors.black,
                   ),
                   hintText: 'Enter Address',
                   enabledBorder: OutlineInputBorder(
@@ -276,7 +288,7 @@ class _PInfo extends State<PInfo> {
                   _fieldFocusChange(context, _eme1nFocus, _eme1cFocus);
                 },
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person),
+                  prefixIcon: Icon(Icons.person, color: Colors.black,),
                   hintText: 'Enter Name',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black, width: 1.0),
@@ -318,7 +330,7 @@ class _PInfo extends State<PInfo> {
                   _fieldFocusChange(context, _eme1cFocus, _eme2nFocus);
                 },
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.phone),
+                  prefixIcon: Icon(Icons.phone, color: Colors.black,),
                   hintText: 'Enter Phone Number',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black, width: 1.0),
@@ -370,6 +382,10 @@ class _PInfo extends State<PInfo> {
                   _fieldFocusChange(context, _eme2nFocus, _eme2cFocus);
                 },
                 decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.person,
+                    color: Colors.black,
+                  ),
                   hintText: 'Enter Name',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black, width: 1.0),
@@ -411,6 +427,10 @@ class _PInfo extends State<PInfo> {
                   _fieldFocusChange(context, _eme2cFocus, _eme3nFocus);
                 },
                 decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.phone,
+                    color: Colors.black,
+                  ),
                   hintText: 'Enter Phone Number',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black, width: 1.0),
@@ -463,6 +483,10 @@ class _PInfo extends State<PInfo> {
                   _fieldFocusChange(context, _eme3nFocus, _eme3cFocus);
                 },
                 decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.person,
+                    color: Colors.black,
+                  ),
                   hintText: 'Enter Name',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black, width: 1.0),
@@ -507,6 +531,10 @@ class _PInfo extends State<PInfo> {
                   _fieldFocusChange(context, _eme3cFocus, null);
                 },
                 decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.phone,
+                    color: Colors.black,
+                  ),
                   hintText: 'Enter Phone Number',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.black, width: 1.0),
@@ -529,9 +557,15 @@ class _PInfo extends State<PInfo> {
             Center(
               child: Padding(
                 padding: EdgeInsets.all(30),
-                child: Container(
+                child: SizedBox(
                   height: 50,
+                  width: double.infinity,
                   child: RaisedButton(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    color: Colors.red.shade700,
                     onPressed: () async {
                       setState(() {
                         if (_formKey.currentState.validate()) {
@@ -545,7 +579,14 @@ class _PInfo extends State<PInfo> {
                         await pDetails(name, contact, add, eme1n, eme1c, eme2n,
                             eme2c, eme3n, eme3c);
                     },
-                    child: !flag ? Text('Next') : CircularProgressIndicator(),
+                    child: !flag
+                        ? Text('Next', style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w500))
+                        : CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors
+                            .white)),
                   ),
                 ),
               ),
@@ -579,7 +620,7 @@ class _PInfo extends State<PInfo> {
     }
     User_UID.document(_firebaseUser.uid).updateData(data).then((user) {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => MInfo()));
+          context, MaterialPageRoute(builder: (context) => MInfo(ii)));
     });
   }
 }

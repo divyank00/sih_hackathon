@@ -50,8 +50,12 @@ class _SignUp extends State<SignUp> {
 
   bool result, flag;
 
+  int i;
+
+
   @override
   void initState() {
+    i = 1;
     result = false;
     flag = false;
     passwordVis = true;
@@ -93,7 +97,9 @@ class _SignUp extends State<SignUp> {
   }
 
   Future<bool> isIDValid(String UID) async {
-    if (UID.isEmpty)
+    if (i==0)
+      return true;
+    if (UID.isEmpty && i==1)
       return false;
     var snapshot = await SOS_UID.document(UID).get();
     return snapshot.exists;
@@ -132,6 +138,7 @@ class _SignUp extends State<SignUp> {
     await _firebaseAuth.createUserWithEmailAndPassword(
         email: mail, password: password).catchError((e) {
       Fluttertoast.showToast(msg: e.toString());
+      print(e.toString());
       _firebaseAuth.signOut();
       setState(() {
         flag = false;
@@ -146,34 +153,44 @@ class _SignUp extends State<SignUp> {
       Map data1 = new HashMap<String, List<String>>();
       Map data2= new HashMap<String, bool>();
       Map data3= new HashMap<String, double>();
-      Firestore.instance.collection('SOS').document(SOS_ID).get().then((
-          documentSS) {
-        if (documentSS.exists)
-          if (documentSS['users'] != null)
-            list = List.from(documentSS['users']);
-          else
-            list = [];
-        list.add(_firebaseUser.uid);
-        data1.putIfAbsent('users', () => list);
-        data2.putIfAbsent('getLocation', ()=>false);
-        data3.putIfAbsent('Longitude', ()=>null);
-        data3.putIfAbsent('Latitude', ()=>null);
-        Firestore.instance.collection('SOS').document(SOS_ID).updateData(data1);
-        Firestore.instance.collection('SOS').document(SOS_ID).updateData(data2);
-        Firestore.instance.collection('SOS').document(SOS_ID).updateData(data3);
-      });
+      if (SOS_ID != null) {
+        Firestore.instance.collection('SOS').document(SOS_ID).get().then((
+            documentSS) {
+          if (documentSS.exists)
+            if (documentSS['users'] != null)
+              list = List.from(documentSS['users']);
+            else
+              list = [];
+          list.add(_firebaseUser.uid);
+          data1.putIfAbsent('users', () => list);
+          data2.putIfAbsent('getLocation', () => false);
+          data3.putIfAbsent('Longitude', () => null);
+          data3.putIfAbsent('Latitude', () => null);
+          Firestore.instance.collection('SOS').document(SOS_ID).updateData(
+              data1);
+          Firestore.instance.collection('SOS').document(SOS_ID).updateData(
+              data2);
+          Firestore.instance.collection('SOS').document(SOS_ID).updateData(
+              data3);
+        });
+      }
       Map data = new HashMap<String, String>();
       data.putIfAbsent('E-Mail', () => mail);
-      data.putIfAbsent('SOS_ID', () => SOS_ID);
+      if (SOS_ID != null)
+        data.putIfAbsent('SOS_ID', () => SOS_ID);
+      else
+        data.putIfAbsent('SOS_ID', () => null);
       data.putIfAbsent('Token', () => token);
       User_UID
           .document(_firebaseUser.uid)
           .setData(data)
           .then((user) {
         Navigator.pop(context);
+        Navigator.pop(context);
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => PInfo()));
+            MaterialPageRoute(builder: (context) => PInfo(i)));
       });
+
     }
   }
 
@@ -365,7 +382,40 @@ class _SignUp extends State<SignUp> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+                padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+                child: Row(
+                  children: <Widget>[
+                    Text('Have a Car?',
+                      style: TextStyle(
+                          fontSize: 20
+                      ),),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: Radio(groupValue: i, onChanged: (val) {
+                        setState(() {
+                          i = 1;
+                        });
+                      }, value: 1,),
+                    ),
+                    Text('Yes', style: TextStyle(
+                        fontSize: 20
+                    ),),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 40.0),
+                      child: Radio(groupValue: i, onChanged: (val) {
+                        setState(() {
+                          i = 0;
+                        });
+                      }, value: 0,),
+                    ),
+                    Text('No', style: TextStyle(
+                        fontSize: 20
+                    ),),
+                  ],
+                ),
+              ), i == 1 ?
+              Padding(
+                padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                 child: Form(
                   key: _IDKey,
                   child: TextFormField(
@@ -377,8 +427,9 @@ class _SignUp extends State<SignUp> {
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.done,
                     validator: (String value) {
-                      if (value.isEmpty) return 'This field cannot be empty!';
-                      if (!result) return 'Invalid QR Code';
+                        if (value.isEmpty) return 'This field cannot be empty!';
+                        if (value.isNotEmpty)
+                          if (!result) return 'Invalid QR Code';
                       return null;
                     },
                     focusNode: _IDFocus,
@@ -423,6 +474,8 @@ class _SignUp extends State<SignUp> {
                     ),
                   ),
                 ),
+              ) : SizedBox(
+                height: 0,
               ),
               Padding(
                 padding: EdgeInsets.only(top: 40, left: 20, right: 20),
@@ -444,11 +497,12 @@ class _SignUp extends State<SignUp> {
                         if (_mailKey.currentState.validate() &&
                             _passKey.currentState.validate() &&
                             _repassKey.currentState.validate() &&
-                            _IDKey.currentState.validate() &&
+                            ((i==1 && _IDKey.currentState.validate())||(i==0)) &&
                             result) {
                           _mailKey.currentState.save();
                           _passKey.currentState.save();
                           _repassKey.currentState.save();
+                          if(i==1)
                           _IDKey.currentState.save();
                           flag = true;
                         }

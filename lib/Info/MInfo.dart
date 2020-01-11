@@ -8,7 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sih_hackathon/Info/CInfo.dart';
 
+int ii;
 class MInfo extends StatefulWidget {
+  MInfo(int i) {
+    ii = i;
+  }
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -60,7 +65,9 @@ class _MInfo extends State<MInfo> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Medical Information'),
+        title: Text('Medical Information', style: TextStyle(
+        ),),
+        backgroundColor: Colors.red.shade900,
       ),
       body: SingleChildScrollView(
           child: Form(
@@ -135,6 +142,7 @@ class _MInfo extends State<MInfo> {
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.do_not_disturb_alt,
+                        color: Colors.black,
                       ),
                       hintText: 'For example, peanuts',
                       enabledBorder: OutlineInputBorder(
@@ -222,7 +230,7 @@ class _MInfo extends State<MInfo> {
                           context, _medNotesFocus, _OrganDonorFocus);
                     },
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.receipt),
+                      prefixIcon: Icon(Icons.receipt,color: Colors.black,),
                       hintText: 'For example, asthma',
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black, width: 1.0),
@@ -263,7 +271,7 @@ class _MInfo extends State<MInfo> {
                     },
                     decoration: InputDecoration(
                       prefixIcon: IconButton(
-                        icon: Image.asset('images/heart.png'),
+                        icon: Image.asset('images/heart.png',),
                         onPressed: null,
                       ),
                       hintText: 'Yes/No/Unknown',
@@ -307,7 +315,8 @@ class _MInfo extends State<MInfo> {
                     },
                     decoration: InputDecoration(
                       prefixIcon: Icon(
-                        Icons.add
+                        Icons.add,
+                        color: Colors.black,
                       ),
                       hintText: 'Additional Information for Emergency',
                       enabledBorder: OutlineInputBorder(
@@ -331,9 +340,15 @@ class _MInfo extends State<MInfo> {
                 Center(
                   child: Padding(
                     padding: EdgeInsets.all(30),
-                    child: Container(
+                    child: SizedBox(
                       height: 50,
+                      width: double.infinity,
                       child: RaisedButton(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        color: Colors.red.shade700,
                         onPressed: () async {
                           setState(() {
                             if (_formKey.currentState.validate()) {
@@ -346,7 +361,11 @@ class _MInfo extends State<MInfo> {
                           if (flag)
                             await pDetails(blood, aller, medic, medN,ODonor,addM);
                         },
-                        child: !flag ? Text('Next') : CircularProgressIndicator(),
+                        child: !flag ? Text('Next', style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500)) : CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors
+                            .white)),
                       ),
                     ),
                   ),
@@ -390,7 +409,7 @@ class _MInfo extends State<MInfo> {
       data.putIfAbsent('Add_med_notes', () => 'None');
     User_UID.document(_firebaseUser.uid).updateData(data).then((user) {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => CInfo()));
+          context, MaterialPageRoute(builder: (context) => CInfo(ii)));
     });
   }
 }

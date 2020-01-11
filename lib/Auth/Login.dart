@@ -106,32 +106,57 @@ class _Login extends State<Login> {
   Future<void> nav(BuildContext context) async {
     FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
     User_UID.document(_firebaseUser.uid).snapshots().listen((datasnapshot) {
-      if (datasnapshot.data.containsKey('name') &&
-          datasnapshot.data.containsKey('bloodG') &&
-          datasnapshot.data.containsKey('Car_Model')) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (BuildContext context) {
-          return Home();
-        }));
-      }
-      else if (datasnapshot.data.containsKey('name') &&
-          datasnapshot.data.containsKey('bloodG')) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (BuildContext context) {
-          return CInfo();
-        }));
-      }
-      else if (datasnapshot.data.containsKey('name')) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (BuildContext context) {
-          return MInfo();
-        }));
+      if (datasnapshot.data['SOS_ID'] != null) {
+        if (datasnapshot.data.containsKey('name') &&
+            datasnapshot.data.containsKey('bloodG') &&
+            datasnapshot.data.containsKey('Car_Model')) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+                return Home();
+              }));
+        } else if (datasnapshot.data.containsKey('name') &&
+            datasnapshot.data.containsKey('bloodG')) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+                return CInfo(1);
+              }));
+        } else if (datasnapshot.data.containsKey('name')) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+                return MInfo(1);
+              }));
+        } else {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+                return PInfo(1);
+              }));
+        }
       }
       else {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (BuildContext context) {
-          return PInfo();
-        }));
+        if (datasnapshot.data.containsKey('name') &&
+            datasnapshot.data.containsKey('bloodG') &&
+            datasnapshot.data.containsKey('Car_Model')) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+                return Home();
+              }));
+        } else if (datasnapshot.data.containsKey('name') &&
+            datasnapshot.data.containsKey('bloodG')) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+                return CInfo(0);
+              }));
+        } else if (datasnapshot.data.containsKey('name')) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+                return MInfo(0);
+              }));
+        } else {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+                return PInfo(0);
+              }));
+        }
       }
     });
   }
@@ -178,7 +203,8 @@ class _Login extends State<Login> {
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     validator: (String value) {
-                      if (value.isEmpty) return 'This field cannot be empty!';
+                      if (value.isEmpty)
+                        return 'This field cannot be empty!';
                       if (!isEmailValid(value)) return 'Invalid E-Mail!';
                       return null;
                     },
@@ -197,20 +223,25 @@ class _Login extends State<Login> {
                       ),
                       hintText: 'Enter E-Mail',
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        borderSide: BorderSide(
+                            color: Colors.black, width: 1.0),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        borderSide: BorderSide(
+                            color: Colors.red, width: 1.0),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: Colors.green.shade600, width: 1.0),
+                        BorderSide(
+                            color: Colors.green.shade600, width: 1.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        borderSide: BorderSide(
+                            color: Colors.red, width: 1.0),
                       ),
                       labelText: 'E-Mail',
-                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                      labelStyle: TextStyle(color: Colors.black,
+                          fontSize: 18),
                     ),
                   ),
                 ),
@@ -228,7 +259,8 @@ class _Login extends State<Login> {
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.done,
                     validator: (String value) {
-                      if (value.isEmpty) return 'This field cannot be empty!';
+                      if (value.isEmpty)
+                        return 'This field cannot be empty!';
                       return null;
                     },
                     focusNode: _passFocus,
@@ -246,7 +278,8 @@ class _Login extends State<Login> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          passwordVis ? Icons.visibility_off : Icons.visibility,
+                          passwordVis ? Icons.visibility_off : Icons
+                              .visibility,
                           color: Colors.black,
                         ),
                         onPressed: () {
@@ -257,20 +290,25 @@ class _Login extends State<Login> {
                       ),
                       hintText: 'Enter Password',
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        borderSide: BorderSide(
+                            color: Colors.black, width: 1.0),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        borderSide: BorderSide(
+                            color: Colors.red, width: 1.0),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
-                        BorderSide(color: Colors.green.shade600, width: 1.0),
+                        BorderSide(
+                            color: Colors.green.shade600, width: 1.0),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                        borderSide: BorderSide(
+                            color: Colors.red, width: 1.0),
                       ),
                       labelText: 'Password',
-                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                      labelStyle: TextStyle(color: Colors.black,
+                          fontSize: 18),
                     ),
                   ),
                 ),
@@ -316,7 +354,9 @@ class _Login extends State<Login> {
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.w500
-                    ),) : CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
+                    ),) : CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors
+                          .white),),
                   ),
                 ),
               ),
@@ -331,15 +371,17 @@ class _Login extends State<Login> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child: Text('Not Registered? Sign Up', style: TextStyle(
+                      child: Text(
+                        'Not Registered? Sign Up', style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w500
                       ),),
                       onPressed: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (BuildContext context) {
-                              return SignUp();
-                            }));
+                            MaterialPageRoute(
+                                builder: (BuildContext context) {
+                                  return SignUp();
+                                }));
                       }),
                 ),
               )
@@ -349,3 +391,4 @@ class _Login extends State<Login> {
     );
   }
 }
+

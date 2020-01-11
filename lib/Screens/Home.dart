@@ -95,7 +95,35 @@ class _Home extends State<Home>{
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('SOS',style: TextStyle(
+            fontSize: 26
+        ),),
+        backgroundColor: Colors.red.shade900,
+        actions: <Widget>[
+          IconButton(
+            icon: Image.asset('images/logout.png',color: Colors.white),
+            tooltip: 'Log Out',
+            onPressed: () async {
+              Map data = new HashMap<String, String>();
+              data.putIfAbsent('Token', () => "");
+              Firestore.instance.collection('Users')
+                  .document(user.uid)
+                  .updateData(data);
+              if (temp1)
+                stop();
+              setState(() {
+                temp1 = false;
+              });
+              await _firebaseAuth.signOut().then((user) {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return Login();
+                        }));
+              });
+            },
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -214,32 +242,6 @@ class _Home extends State<Home>{
             ) :
             SizedBox(
               height: 0,
-            ),
-            SizedBox(
-                height: 100
-            ),
-            Center(
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  height: 50,
-                  child: RaisedButton(
-                      child: Text('Log Out'),
-                      onPressed: () async {
-                        FirebaseMessaging message = new FirebaseMessaging();
-                        Map data = new HashMap<String, String>();
-                        data.putIfAbsent('Token', () => "");
-                        Firestore.instance.collection('Users')
-                            .document(user.uid)
-                            .updateData(data);
-                        await _firebaseAuth.signOut().then((user) {
-                          Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) {
-                                    return Login();
-                                  }));
-                        });
-                      }),
-                )
             ),
           ],
         ),
