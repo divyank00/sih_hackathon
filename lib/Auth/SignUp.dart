@@ -62,325 +62,18 @@ class _SignUp extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('SOS'),
+      backgroundColor: Colors.red.shade700,
+//      backgroundColor: Colors.black,
+//      appBar: AppBar(
+//        title: Text('SOS'),
+//        backgroundColor: Colors.red.shade900,
+//      ),
+      body: SafeArea(
+        child: Center(
+            child: SingleChildScrollView(
+              child: CardB(),)
+        ),
       ),
-      body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-                child: Form(
-                  key: _mailKey,
-                  child: TextFormField(
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    validator: (String value) {
-                      if (value.isEmpty) return 'This field cannot be empty!';
-                      if (!isEmailValid(value)) return 'Invalid E-Mail!';
-                      return null;
-                    },
-                    focusNode: _mailFocus,
-                    controller: mailController,
-                    onSaved: (value) {
-                      mail = value;
-                    },
-                    onFieldSubmitted: (term) {
-                      _fieldFocusChange(context, _mailFocus, _passFocus);
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.mail,
-                      ),
-                      hintText: 'Enter E-Mail',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.green.shade600, width: 1.0),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
-                      ),
-                      labelText: 'E-Mail',
-                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-                child: Form(
-                  key: _passKey,
-                  child: TextFormField(
-                    autocorrect: false,
-                    obscureText: passwordVis,
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                    keyboardType: TextInputType.visiblePassword,
-                    textInputAction: TextInputAction.next,
-                    validator: (String value) {
-                      if (value.isEmpty) {
-                        return 'This field cannot be empty!';
-                      }
-                      if (!isPasswordValid(value)) {
-                        return 'Password must be more than 6 characters!';
-                      }
-                      return null;
-                    },
-                    focusNode: _passFocus,
-                    controller: passController,
-                    onSaved: (value) {
-                      password = value;
-                    },
-                    onFieldSubmitted: (term) {
-                      _fieldFocusChange(context, _passFocus, _repassFocus);
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.enhanced_encryption,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          passwordVis ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            passwordVis = !passwordVis;
-                          });
-                        },
-                      ),
-                      hintText: 'Enter Password',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.green.shade600, width: 1.0),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
-                      ),
-                      labelText: 'Password',
-                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-                child: Form(
-                  key: _repassKey,
-                  child: TextFormField(
-                    autocorrect: false,
-                    obscureText: repasswordVis,
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                    keyboardType: TextInputType.visiblePassword,
-                    textInputAction: TextInputAction.next,
-                    validator: (String value) {
-                      if (value.isEmpty) return 'This field cannot be empty!';
-                      if ((passController.text).compareTo(
-                          repassController.text) !=
-                          0) return 'Password must be same!';
-                      return null;
-                    },
-                    focusNode: _repassFocus,
-                    controller: repassController,
-                    onSaved: (value) {
-                      repassword = value;
-                    },
-                    onFieldSubmitted: (term) {
-                      _fieldFocusChange(context, _repassFocus, _IDFocus);
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.enhanced_encryption,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          repasswordVis ? Icons.visibility_off : Icons
-                              .visibility,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            repasswordVis = !repasswordVis;
-                          });
-                        },
-                      ),
-                      hintText: 'Re-Enter Password',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.green.shade600, width: 1.0),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
-                      ),
-                      labelText: 'Confirm Password',
-                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-                child: Form(
-                  key: _IDKey,
-                  child: TextFormField(
-                    maxLines: null,
-                    autocorrect: false,
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.done,
-                    validator: (String value) {
-                      if (value.isEmpty) return 'This field cannot be empty!';
-                      if (!result) return 'Invalid QR Code';
-                      return null;
-                    },
-                    focusNode: _IDFocus,
-                    controller: IDController,
-                    onSaved: (value) {
-                      SOS_ID = value;
-                    },
-                    onFieldSubmitted: (term) {
-                      _fieldFocusChange(context, _IDFocus, null);
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.directions_car,
-                      ),
-                      suffixIcon: IconButton(
-                        iconSize: 40,
-                        icon: Image.asset('images/qr.jpg',
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _scanQR();
-                          });
-                        },
-                      ),
-                      hintText: 'Scan QR',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Colors.green.shade600, width: 1.0),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red, width: 1.0),
-                      ),
-                      labelText: 'SOS ID',
-                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(30),
-                child: Container(
-                  height: 50,
-                  child: RaisedButton(
-                    onPressed: () async {
-                      setState(() {
-                        flag = true;
-                      });
-                      result = await isIDValid(IDController.text);
-                      setState(() {
-                        if (_mailKey.currentState.validate() &&
-                            _passKey.currentState.validate() &&
-                            _repassKey.currentState.validate() &&
-                            _IDKey.currentState.validate() &&
-                            result) {
-                          _mailKey.currentState.save();
-                          _passKey.currentState.save();
-                          _repassKey.currentState.save();
-                          _IDKey.currentState.save();
-                          flag = true;
-                        }
-                        else {
-                          if (!_mailKey.currentState.validate()) {
-                            mailController.clear();
-                            passController.clear();
-                            repassController.clear();
-                            IDController.clear();
-                            passwordVis = true;
-                            repasswordVis = true;
-                            flag = false;
-                          }
-                          if (!_passKey.currentState.validate()) {
-                            passController.clear();
-                            repassController.clear();
-                            passwordVis = true;
-                            repasswordVis = true;
-                            flag = false;
-                          }
-                          if (!_repassKey.currentState.validate()) {
-                            repassController.clear();
-                            passwordVis = true;
-                            repasswordVis = true;
-                            flag = false;
-                          }
-                          if (!_IDKey.currentState.validate() && !result) {
-                            IDController.clear();
-                            flag = false;
-
-                          }
-                        }
-                      });
-                      if (flag)
-                        await Sign_Up(mail, password);
-                    },
-                    child: !flag
-                        ? Text('Sign Up')
-                        : CircularProgressIndicator(),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 80,
-              ),
-              Text('Already Registered?'),
-              Container(
-                padding: EdgeInsets.only(top: 5),
-                height: 50,
-                child: RaisedButton(
-                    child: Text('Sign In'),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                            return Login();
-                          }));
-                    }),
-              )
-            ],
-          )),
     );
   }
 
@@ -483,6 +176,354 @@ class _SignUp extends State<SignUp> {
       });
     }
   }
+
+  Widget CardB() {
+    return Container(
+      padding: EdgeInsets.only(right: 10, left: 10),
+      child: Card(
+          elevation: 15,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 50, left: 20, right: 20),
+                child: Form(
+                  key: _mailKey,
+                  child: TextFormField(
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    validator: (String value) {
+                      if (value.isEmpty) return 'This field cannot be empty!';
+                      if (!isEmailValid(value)) return 'Invalid E-Mail!';
+                      return null;
+                    },
+                    focusNode: _mailFocus,
+                    controller: mailController,
+                    onSaved: (value) {
+                      mail = value;
+                    },
+                    onFieldSubmitted: (term) {
+                      _fieldFocusChange(context, _mailFocus, _passFocus);
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.mail,
+                        color: Colors.black,
+                      ),
+                      hintText: 'Enter E-Mail',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: Colors.green.shade600, width: 1.0),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      labelText: 'E-Mail',
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+                child: Form(
+                  key: _passKey,
+                  child: TextFormField(
+                    autocorrect: false,
+                    obscureText: passwordVis,
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    keyboardType: TextInputType.visiblePassword,
+                    textInputAction: TextInputAction.next,
+                    validator: (String value) {
+                      if (value.isEmpty) {
+                        return 'This field cannot be empty!';
+                      }
+                      if (!isPasswordValid(value)) {
+                        return 'Password must be more than 6 characters!';
+                      }
+                      return null;
+                    },
+                    focusNode: _passFocus,
+                    controller: passController,
+                    onSaved: (value) {
+                      password = value;
+                    },
+                    onFieldSubmitted: (term) {
+                      _fieldFocusChange(context, _passFocus, _repassFocus);
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.enhanced_encryption,
+                        color: Colors.black,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          passwordVis ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            passwordVis = !passwordVis;
+                          });
+                        },
+                      ),
+                      hintText: 'Enter Password',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: Colors.green.shade600, width: 1.0),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      labelText: 'Password',
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+                child: Form(
+                  key: _repassKey,
+                  child: TextFormField(
+                    autocorrect: false,
+                    obscureText: repasswordVis,
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    keyboardType: TextInputType.visiblePassword,
+                    textInputAction: TextInputAction.next,
+                    validator: (String value) {
+                      if (value.isEmpty) return 'This field cannot be empty!';
+                      if ((passController.text).compareTo(
+                          repassController.text) !=
+                          0) return 'Password must be same!';
+                      return null;
+                    },
+                    focusNode: _repassFocus,
+                    controller: repassController,
+                    onSaved: (value) {
+                      repassword = value;
+                    },
+                    onFieldSubmitted: (term) {
+                      _fieldFocusChange(context, _repassFocus, _IDFocus);
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.enhanced_encryption,
+                        color: Colors.black,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          repasswordVis ? Icons.visibility_off : Icons
+                              .visibility,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            repasswordVis = !repasswordVis;
+                          });
+                        },
+                      ),
+                      hintText: 'Re-Enter Password',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: Colors.green.shade600, width: 1.0),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      labelText: 'Confirm Password',
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+                child: Form(
+                  key: _IDKey,
+                  child: TextFormField(
+                    maxLines: null,
+                    autocorrect: false,
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    validator: (String value) {
+                      if (value.isEmpty) return 'This field cannot be empty!';
+                      if (!result) return 'Invalid QR Code';
+                      return null;
+                    },
+                    focusNode: _IDFocus,
+                    controller: IDController,
+                    onSaved: (value) {
+                      SOS_ID = value;
+                    },
+                    onFieldSubmitted: (term) {
+                      _fieldFocusChange(context, _IDFocus, null);
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.directions_car,
+                        color: Colors.black,
+                      ),
+                      suffixIcon: IconButton(
+                        iconSize: 40,
+                        icon: Image.asset('images/qr.jpg',
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _scanQR();
+                          });
+                        },
+                      ),
+                      hintText: 'Scan QR',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: Colors.green.shade600, width: 1.0),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      labelText: 'SOS ID',
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 40, left: 20, right: 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    color: Colors.red.shade700,
+                    elevation: 5,
+                    onPressed: () async {
+                      setState(() {
+                        flag = true;
+                      });
+                      result = await isIDValid(IDController.text);
+                      setState(() {
+                        if (_mailKey.currentState.validate() &&
+                            _passKey.currentState.validate() &&
+                            _repassKey.currentState.validate() &&
+                            _IDKey.currentState.validate() &&
+                            result) {
+                          _mailKey.currentState.save();
+                          _passKey.currentState.save();
+                          _repassKey.currentState.save();
+                          _IDKey.currentState.save();
+                          flag = true;
+                        }
+                        else {
+                          if (!_mailKey.currentState.validate()) {
+                            mailController.clear();
+                            passController.clear();
+                            repassController.clear();
+                            IDController.clear();
+                            passwordVis = true;
+                            repasswordVis = true;
+                            flag = false;
+                          }
+                          if (!_passKey.currentState.validate()) {
+                            passController.clear();
+                            repassController.clear();
+                            passwordVis = true;
+                            repasswordVis = true;
+                            flag = false;
+                          }
+                          if (!_repassKey.currentState.validate()) {
+                            repassController.clear();
+                            passwordVis = true;
+                            repasswordVis = true;
+                            flag = false;
+                          }
+                          if (!_IDKey.currentState.validate() && !result) {
+                            IDController.clear();
+                            flag = false;
+                          }
+                        }
+                      });
+                      if (flag)
+                        await Sign_Up(mail, password);
+                    },
+                    child: !flag
+                        ? Text('Sign Up', style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w500
+                    ),)
+                        : CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.only(
+                    top: 50, left: 20, right: 20, bottom: 30),
+                child: SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: RaisedButton(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Text('Already Registered? Log In', style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500
+                      ),),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                              return Login();
+                            }));
+                      }),
+                ),
+              )
+            ],
+          )),
+    );
+  }
+
 }
 
 

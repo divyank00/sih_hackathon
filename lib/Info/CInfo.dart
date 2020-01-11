@@ -28,7 +28,7 @@ class _CInfo extends State<CInfo> {
   TextEditingController cSController = TextEditingController();
   TextEditingController idenController = TextEditingController();
 
-  String cM, cN, cC, cS, iden;
+  String cM, cN, cC, cS, iden,photo;
 
   final FocusNode _cMFocus = FocusNode();
   final FocusNode _cNFocus = FocusNode();
@@ -503,7 +503,7 @@ class _CInfo extends State<CInfo> {
       data.putIfAbsent('Identification', () => 'None');
     if (file != null) {
       await uploadFile(file);
-      data.putIfAbsent('profilePath', () => 'Users/${_firebaseUser.uid}');
+      data.putIfAbsent('profilePath', () => photo);
     }
     User_UID.document(_firebaseUser.uid).updateData(data).then((user) {
       Navigator.pushReplacement(
@@ -517,7 +517,8 @@ class _CInfo extends State<CInfo> {
         .ref()
         .child('Users/${_firebaseUser.uid}');
     StorageUploadTask uploadTask = storageReference.putFile(file);
-    await uploadTask.onComplete;
+    var downURL=await (await uploadTask.onComplete).ref.getDownloadURL();
+    photo=downURL.toString();
   }
 
   Future<void> _showD(BuildContext context) async {
