@@ -1,9 +1,11 @@
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sih_hackathon/Info/CInfo.dart';
 
 class MInfo extends StatefulWidget {
@@ -40,10 +42,17 @@ class _MInfo extends State<MInfo> {
 
   bool flag;
 
+  Future<void> startServiceinPlatform() async {
+    if(Platform.isAndroid){
+      var methodChannel = MethodChannel('InBackground');
+      String data = await methodChannel.invokeMethod('startService');
+    }
+}
   @override
   void initState() {
     flag = false;
     super.initState();
+    startServiceinPlatform();
   }
 
   @override
@@ -242,7 +251,6 @@ class _MInfo extends State<MInfo> {
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                     validator: (String value) {
-                      if (value.isEmpty) return 'This field cannot be empty!';
                       return null;
                     },
                     focusNode: _OrganDonorFocus,
@@ -372,7 +380,10 @@ class _MInfo extends State<MInfo> {
       data.putIfAbsent('medical_notes', () => medN);
     else
       data.putIfAbsent('medical_notes', () => 'Unknown');
-    data.putIfAbsent('organDonor', () => OD);
+    if (medN.isNotEmpty)
+      data.putIfAbsent('organDonor', () => OD);
+    else
+      data.putIfAbsent('organDonor', () => 'Unknown');
     if (addMed.isNotEmpty)
       data.putIfAbsent('Additional_med_notes', () => addMed);
     else

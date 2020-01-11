@@ -5,8 +5,10 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:sih_hackathon/Auth/Login.dart';
@@ -28,49 +30,8 @@ class _Home extends State<Home>{
   final CollectionReference User_UID = _firestore.collection("Users");
 
 
-//  final Firestore _db = Firestore.instance;
-//  final FirebaseMessaging _fcm = FirebaseMessaging();
-//  StreamSubscription iosSubscription;
-//  @override
-//  void initState() {
-//    // TODO: implement initState
-//    super.initState();
-//    if (Platform.isIOS) {
-//      iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
-//        // save the token  OR subscribe to a topic here
-//      });
-//
-//      _fcm.requestNotificationPermissions(IosNotificationSettings());
-//    }
-//    _fcm.configure(
-//      onMessage: (Map<String, dynamic> message) async {
-//        print("onMessage: $message");
-//        showDialog(
-//          context: context,
-//          builder: (context) => AlertDialog(
-//            content: ListTile(
-//              title: Text(message['notification']['title']),
-//              subtitle: Text(message['notification']['body']),
-//            ),
-//            actions: <Widget>[
-//              FlatButton(
-//                child: Text('Ok'),
-//                onPressed: () => Navigator.of(context).pop(),
-//              ),
-//            ],
-//          ),
-//        );
-//      },
-//      onLaunch: (Map<String, dynamic> message) async {
-//        print("onLaunch: $message");
-//        // TODO optional
-//      },
-//      onResume: (Map<String, dynamic> message) async {
-//        print("onResume: $message");
-//        // TODO optional
-//      },
-//    );
-//  }
+  final FirebaseMessaging _fcm = FirebaseMessaging();
+
   FirebaseUser user;
   String UID;
 
@@ -83,7 +44,7 @@ class _Home extends State<Home>{
 
   Placemark location;
 
-  bool flag, flag1, flag2, temp, temp1;
+  bool flag, flag1, flag2, flag3, temp, temp1;
 
 
   String localFilePath;
@@ -109,9 +70,24 @@ class _Home extends State<Home>{
     flag = false;
     flag1 = false;
     flag2 = false;
+    flag3 = false;
     getUID().then((user1) {
       UID = user1.uid;
     });
+    _fcm.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+        // TODO optional
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+        // TODO optional
+      },
+    );
+    _fcm.requestNotificationPermissions(IosNotificationSettings());
   }
 
   @override
@@ -128,11 +104,11 @@ class _Home extends State<Home>{
               stream: accident.snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.data == null) return CircularProgressIndicator();
                 return Container(
                   height: 300,
                   child: new Column(
-                    children: snapshot.data.documents.map((
-                        DocumentSnapshot document) {
+                    children: snapshot.data.documents.map((DocumentSnapshot document) {
                       if (document.exists) {
                         if (document['users'] != null) {
                           list = List<String>.from(document['users']);
@@ -148,6 +124,7 @@ class _Home extends State<Home>{
                               if (temp) {
                                 stop();
                                 temp = false;
+                                temp1=true;
                               }
                             }
                           }
@@ -210,7 +187,7 @@ class _Home extends State<Home>{
                       await MapLauncher.launchMap(
                         mapType: MapType.google,
                         coords: Coords(lat, long),
-                        title: 'Accident Spot',
+                        title: 'Find my Car',
                         description: 'Your car is here!',
                       );
                     }
@@ -218,7 +195,7 @@ class _Home extends State<Home>{
                       await MapLauncher.launchMap(
                         mapType: MapType.apple,
                         coords: Coords(lat, long),
-                        title: 'Accident Spot',
+                        title: 'Find my Car',
                         description: 'Your car is here!',
                       );
                     }
@@ -226,7 +203,7 @@ class _Home extends State<Home>{
                       final availableMaps = await MapLauncher.installedMaps;
                       await availableMaps.first.showMarker(
                         coords: Coords(lat, long),
-                        title: "Accident Spot",
+                        title: "Find my Car",
                         description: "Your car is here!",
                       );
                     }
@@ -248,6 +225,12 @@ class _Home extends State<Home>{
                   child: RaisedButton(
                       child: Text('Log Out'),
                       onPressed: () async {
+                        FirebaseMessaging message = new FirebaseMessaging();
+                        Map data = new HashMap<String, String>();
+                        data.putIfAbsent('Token', () => "");
+                        Firestore.instance.collection('Users')
+                            .document(user.uid)
+                            .updateData(data);
                         await _firebaseAuth.signOut().then((user) {
                           Navigator.push(context,
                               MaterialPageRoute(
@@ -323,8 +306,12 @@ class _Home extends State<Home>{
               width: 130,
               child: RaisedButton(
                 onPressed: () async {
+                  setState(() {
+                    flag3 = true;
+                  });
                   await getLocation();
                   setState(() {
+                    flag3 = false;
                     flag = true;
                   });
                 },
@@ -332,6 +319,7 @@ class _Home extends State<Home>{
               ),
             ),
           ),
+          flag3 ? CircularProgressIndicator() : SizedBox(height: 0),
           flag ?
           Container(
             width: MediaQuery
@@ -360,7 +348,7 @@ class _Home extends State<Home>{
                 child: Container(
                   width: 130,
                   child: RaisedButton(
-                    onPressed: () async {
+                    onPressed: flag ? () async {
                       if (await MapLauncher.isMapAvailable(MapType.google)) {
                         await MapLauncher.launchMap(
                           mapType: MapType.google,
@@ -386,6 +374,10 @@ class _Home extends State<Home>{
                           description: "Your car is here!",
                         );
                       }
+                    } : () {
+                      Fluttertoast.showToast(
+                          msg: 'First Press \"Get Location\" to acquire the co-ordinates!',
+                          toastLength: Toast.LENGTH_LONG);
                     },
                     child: Text('Navigate'),
                   ),
@@ -397,7 +389,8 @@ class _Home extends State<Home>{
                     icon: Image.asset('images/silent.jpg', color: Colors.white),
                     tooltip: 'Silent',
                     splashColor: temp1 ? Colors.white : Colors.red.shade900,
-                    highlightColor: temp1 ? Colors.white : Colors.red.shade900,
+                    highlightColor: temp1 ? Colors.white : Colors.red
+                        .shade900,
                     onPressed: () {
                       if (temp1)
                         stop();

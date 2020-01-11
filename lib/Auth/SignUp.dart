@@ -4,6 +4,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -446,6 +447,8 @@ class _SignUp extends State<SignUp> {
     });
     if (flag1) {
       FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
+      FirebaseMessaging message=new FirebaseMessaging();
+      var token = await message.getToken();
       List<String> list;
       Map data1 = new HashMap<String, List<String>>();
       Map data2= new HashMap<String, bool>();
@@ -453,7 +456,10 @@ class _SignUp extends State<SignUp> {
       Firestore.instance.collection('SOS').document(SOS_ID).get().then((
           documentSS) {
         if (documentSS.exists)
-          list = List.from(documentSS['users']);
+          if (documentSS['users'] != null)
+            list = List.from(documentSS['users']);
+          else
+            list = [];
         list.add(_firebaseUser.uid);
         data1.putIfAbsent('users', () => list);
         data2.putIfAbsent('getLocation', ()=>false);
@@ -463,16 +469,16 @@ class _SignUp extends State<SignUp> {
         Firestore.instance.collection('SOS').document(SOS_ID).updateData(data2);
         Firestore.instance.collection('SOS').document(SOS_ID).updateData(data3);
       });
-
-
       Map data = new HashMap<String, String>();
       data.putIfAbsent('E-Mail', () => mail);
       data.putIfAbsent('SOS_ID', () => SOS_ID);
+      data.putIfAbsent('Token', () => token);
       User_UID
           .document(_firebaseUser.uid)
           .setData(data)
           .then((user) {
-        Navigator.pushReplacement(context,
+        Navigator.pop(context);
+        Navigator.push(context,
             MaterialPageRoute(builder: (context) => PInfo()));
       });
     }

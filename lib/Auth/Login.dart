@@ -1,6 +1,9 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -55,171 +58,170 @@ class _Login extends State<Login> {
       ),
       body: SingleChildScrollView(
           child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-            child: Form(
-              key: _mailKey,
-              child: TextFormField(
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                validator: (String value) {
-                  if (value.isEmpty) return 'This field cannot be empty!';
-                  if (!isEmailValid(value)) return 'Invalid E-Mail!';
-                  return null;
-                },
-                focusNode: _mailFocus,
-                controller: mailController,
-                onSaved: (value) {
-                  mail = value;
-                },
-                onFieldSubmitted: (term) {
-                  _fieldFocusChange(context, _mailFocus, _passFocus);
-                },
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.mail,
-                  ),
-                  hintText: 'Enter E-Mail',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.green.shade600, width: 1.0),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 1.0),
-                  ),
-                  labelText: 'E-Mail',
-                  labelStyle: TextStyle(color: Colors.black, fontSize: 18),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-            child: Form(
-              key: _passKey,
-              child: TextFormField(
-                autocorrect: false,
-                obscureText: passwordVis,
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-                keyboardType: TextInputType.visiblePassword,
-                textInputAction: TextInputAction.done,
-                validator: (String value) {
-                  if (value.isEmpty) return 'This field cannot be empty!';
-                  return null;
-                },
-                focusNode: _passFocus,
-                controller: passController,
-                onSaved: (value) {
-                  password = value;
-                },
-                onFieldSubmitted: (term) {
-                  _fieldFocusChange(context, _passFocus, null);
-                },
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.enhanced_encryption,
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      passwordVis ? Icons.visibility_off : Icons.visibility,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
+                child: Form(
+                  key: _mailKey,
+                  child: TextFormField(
+                    style: TextStyle(
                       color: Colors.black,
                     ),
-                    onPressed: () {
-                      setState(() {
-                        passwordVis = !passwordVis;
-                      });
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    validator: (String value) {
+                      if (value.isEmpty) return 'This field cannot be empty!';
+                      if (!isEmailValid(value)) return 'Invalid E-Mail!';
+                      return null;
                     },
-                  ),
-                  hintText: 'Enter Password',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 1.0),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
+                    focusNode: _mailFocus,
+                    controller: mailController,
+                    onSaved: (value) {
+                      mail = value;
+                    },
+                    onFieldSubmitted: (term) {
+                      _fieldFocusChange(context, _mailFocus, _passFocus);
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.mail,
+                      ),
+                      hintText: 'Enter E-Mail',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
                         BorderSide(color: Colors.green.shade600, width: 1.0),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      labelText: 'E-Mail',
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
                   ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.red, width: 1.0),
-                  ),
-                  labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.black, fontSize: 18),
                 ),
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(30),
-            child: Container(
-              height: 50,
-              child: RaisedButton(
-                onPressed: () async {
-                  setState(() {
-                    flag = true;
-                  });
-                  setState(() {
-                    if (_mailKey.currentState.validate() &&
-                        _passKey.currentState.validate()) {
-                      _mailKey.currentState.save();
-                      _passKey.currentState.save();
-                      flag = true;
-                    } else {
-                      if (!_mailKey.currentState.validate()) {
-                        mailController.clear();
-                        passController.clear();
-                        passwordVis = true;
-                        flag = false;
-                      }
-                      if (!_passKey.currentState.validate()) {
-                        passController.clear();
-                        passwordVis = true;
-                        flag = false;
-                      }
-                    }
-                  });
-                  if (flag) await Sign_In(mail, password);
-                },
-                child: !flag ? Text('Sign In') : CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.only(top: 30, left: 10, right: 10),
+                child: Form(
+                  key: _passKey,
+                  child: TextFormField(
+                    autocorrect: false,
+                    obscureText: passwordVis,
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    keyboardType: TextInputType.visiblePassword,
+                    textInputAction: TextInputAction.done,
+                    validator: (String value) {
+                      if (value.isEmpty) return 'This field cannot be empty!';
+                      return null;
+                    },
+                    focusNode: _passFocus,
+                    controller: passController,
+                    onSaved: (value) {
+                      password = value;
+                    },
+                    onFieldSubmitted: (term) {
+                      _fieldFocusChange(context, _passFocus, null);
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.enhanced_encryption,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          passwordVis ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            passwordVis = !passwordVis;
+                          });
+                        },
+                      ),
+                      hintText: 'Enter Password',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                        BorderSide(color: Colors.green.shade600, width: 1.0),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red, width: 1.0),
+                      ),
+                      labelText: 'Password',
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-          SizedBox(
-            height: 80,
-          ),
-          Text('Register?',),
-          Container(
-            padding: EdgeInsets.only(top: 5),
-            height: 50,
-            child: RaisedButton(
-                child: Text('Sign Up'),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                    return SignUp();
-                  }));
-                }),
-          )
-        ],
-      )),
+              Padding(
+                padding: EdgeInsets.all(30),
+                child: Container(
+                  height: 50,
+                  child: RaisedButton(
+                    onPressed: () async {
+                      setState(() {
+                        flag = true;
+                      });
+                      setState(() {
+                        if (_mailKey.currentState.validate() &&
+                            _passKey.currentState.validate()) {
+                          _mailKey.currentState.save();
+                          _passKey.currentState.save();
+                          flag = true;
+                        } else {
+                          if (!_mailKey.currentState.validate()) {
+                            mailController.clear();
+                            passController.clear();
+                            passwordVis = true;
+                            flag = false;
+                          }
+                          if (!_passKey.currentState.validate()) {
+                            passController.clear();
+                            passwordVis = true;
+                            flag = false;
+                          }
+                        }
+                      });
+                      if (flag) await Sign_In(mail, password);
+                    },
+                    child: !flag ? Text('Sign In') : CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 80,
+              ),
+              Text('Register?',),
+              Container(
+                padding: EdgeInsets.only(top: 5),
+                height: 50,
+                child: RaisedButton(
+                    child: Text('Sign Up'),
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return SignUp();
+                          }));
+                    }),
+              )
+            ],
+          )),
     );
   }
 
-  void _fieldFocusChange(
-      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+  void _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
@@ -235,7 +237,15 @@ class _Login extends State<Login> {
   Sign_In(String mail, String password) async {
     await _firebaseAuth
         .signInWithEmailAndPassword(email: mail, password: password)
-        .then((authResult) {
+        .then((authResult) async {
+      FirebaseUser user = await _firebaseAuth.currentUser();
+      FirebaseMessaging message = new FirebaseMessaging();
+      var token = await message.getToken();
+      Map data = new HashMap<String, String>();
+      data.putIfAbsent('Token', () => token);
+      Firestore.instance.collection('Users')
+          .document(user.uid)
+          .updateData(data);
       nav(context);
     }).catchError((e) {
       Fluttertoast.showToast(msg: e.toString());
