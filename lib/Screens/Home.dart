@@ -14,6 +14,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share/share.dart';
 import 'package:sih_hackathon/Auth/Login.dart';
 
 class Home extends StatefulWidget{
@@ -49,7 +50,7 @@ class _Home extends State<Home>{
 
   Placemark location;
 
-  bool flag, flag1, flag2, flag3, temp, temp1, qrFlag;
+  bool flag, flag1, flag2, flag3, temp, temp1, qrFlag, qrFlag2;
 
   String result, SOS_ID;
 
@@ -72,6 +73,7 @@ class _Home extends State<Home>{
     // TODO: implement initState
     super.initState();
     qrFlag = false;
+    qrFlag2 = true;
     temp = false;
     result = '';
     temp1 = true;
@@ -141,51 +143,62 @@ class _Home extends State<Home>{
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.data == null) return CircularProgressIndicator();
-                return Container(
-                  height: 300,
-                  child: new Column(
-                    children: snapshot.data.documents.map((DocumentSnapshot document) {
-                      if (document.exists) {
-                        if (document['users'] != null) {
-                          list = List<String>.from(document['users']);
-                          if (list.contains(UID)) {
-                            if (document['flag'] == true) {
-                              long = document['Longitude'];
-                              lat = document['Latitude'];
-                              if (temp1)
-                                play();
-                              return cardB();
-                            }
-                            else {
-                              if (temp) {
-                                stop();
-                                temp = false;
-                                temp1=true;
-                              }
+                return new Column(
+                  children: snapshot.data.documents.map((
+                      DocumentSnapshot document) {
+                    if (document.exists) {
+                      if (document['users'] != null) {
+                        list = List<String>.from(document['users']);
+                        if (list.contains(UID)) {
+                          if (document['flag'] == true) {
+                            long = document['Longitude'];
+                            lat = document['Latitude'];
+                            if (temp1)
+                              play();
+                            return cardB();
+                          }
+                          else {
+                            if (temp) {
+                              stop();
+                              temp = false;
+                              temp1 = true;
                             }
                           }
                         }
                       }
-                      return SizedBox(
-                        height: 0,
-                      );
-                    }).toList(),
-                  ),
+                    }
+                    return SizedBox(
+                      height: 0,
+                    );
+                  }).toList(),
                 );
               },
             ),
+            SizedBox(
+              height: 40,
+            ),
             Center(
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
+                child: SizedBox(
+                  width: double.infinity,
                   height: 50,
-                  child: RaisedButton(
-                      child: Text('Find My Car'),
-                      onPressed: () async {
-                        setState(() {
-                          flag2 = true;
-                        });
-                        await getCoordinates();
-                      }),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                    child: RaisedButton(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text('Find My Car', style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500
+                        ),),
+                        onPressed: () async {
+                          setState(() {
+                            flag2 = true;
+                          });
+                          await getCoordinates();
+                        }),
+                  ),
                 )
             ),
             SizedBox(
@@ -244,48 +257,72 @@ class _Home extends State<Home>{
                       );
                     }
                   },
-                  child: Text('Navigate'),
+                  child: Text('Navigate', style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500
+                  ),),
                 ),
               ),
             ) :
             SizedBox(
               height: 0,
             ),
-            RaisedButton(onPressed: () {
-              User_UID.document(UID).get().then((documentSS) {
-                if (documentSS.exists) {
-                  if (documentSS['SOS_ID'] != null) {
-                    SOS_ID = documentSS['SOS_ID'];
-                    Map data1 = new HashMap<String, List<String>>();
-                    Firestore.instance
-                        .collection('SOS')
-                        .document(SOS_ID)
-                        .get()
-                        .then((documentSS) {
-                      if (documentSS.exists)
-                        list1 = [];
-                      list1.add(UID);
-                      data1.putIfAbsent('Trip', () => list1);
-                      Firestore.instance
-                          .collection('SOS')
-                          .document(SOS_ID)
-                          .updateData(
-                          data1).then((val) {
-                        Fluttertoast.showToast(msg: 'Successfully Started!');
-                        setState(() {
-                          qrFlag = true;
-                        });
-                      });
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: RaisedButton(elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ), onPressed: () {
+                    setState(() {
+                      qrFlag2 = false;
                     });
-                  }
-                  else {
-                    Fluttertoast.showToast(msg: 'Can\'t Start a Trip!');
-                  }
-                }
-              });
-            },
-              child: Text('Start Trip'),
+                    User_UID.document(UID).get().then((documentSS) {
+                      if (documentSS.exists) {
+                        if (documentSS['SOS_ID'] != null) {
+                          SOS_ID = documentSS['SOS_ID'];
+                          Map data1 = new HashMap<String, List<String>>();
+                          Firestore.instance
+                              .collection('SOS')
+                              .document(SOS_ID)
+                              .get()
+                              .then((documentSS) {
+                            if (documentSS.exists)
+                              list1 = [];
+                            list1.add(UID);
+                            data1.putIfAbsent('Trip', () => list1);
+                            Firestore.instance
+                                .collection('SOS')
+                                .document(SOS_ID)
+                                .updateData(
+                                data1).then((val) {
+                              Fluttertoast.showToast(
+                                  msg: 'Successfully Started!');
+                              setState(() {
+                                qrFlag = true;
+                                qrFlag2=true;
+                              });
+                            });
+                          });
+                        }
+                        else {
+                          Fluttertoast.showToast(msg: 'Can\'t Start a Trip!');
+                        }
+                      }
+                    });
+                  },
+                  child: qrFlag2 ? Text('Start Trip', style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500
+                  ),):CircularProgressIndicator(),
 
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
             ),
             qrFlag ? QrImage(
               data: UID,
@@ -294,95 +331,128 @@ class _Home extends State<Home>{
             ) : SizedBox(
               height: 0,
             ),
-            RaisedButton(onPressed: () async {
-              await _scanQR();
-              bool val = await isIDValid(result);
-              if (val == false)
-                Fluttertoast.showToast(msg: 'Can\'t Join');
-              else {
-                User_UID.document(result).get().then((documentSS) {
-                  if (documentSS.exists) {
-                    if (documentSS['SOS_ID'] != null) {
-                      SOS_ID = documentSS['SOS_ID'];
-                      Map data1 = new HashMap<String, List<String>>();
-                      SOS_UID
-                          .document(SOS_ID)
-                          .get()
-                          .then((documentSS) {
-                        if (documentSS.exists)
-                          if (documentSS['Trip'] != null) {
-                            list2 = List.from(documentSS['Trip']);
-                            if (!list2.contains(UID)) {
-                              list2.add(UID);
-                              data1.putIfAbsent('Trip', () => list2);
+            Padding(
+              padding: const EdgeInsets.only(
+                  top: 10.0, bottom: 18, left: 8, right: 8),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: RaisedButton(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ), onPressed: () async {
+                  await _scanQR();
+                  bool val = await isIDValid(result);
+                  if (val == false)
+                    Fluttertoast.showToast(msg: 'Can\'t Join');
+                  else {
+                    User_UID.document(result).get().then((documentSS) {
+                      if (documentSS.exists) {
+                        if (documentSS['SOS_ID'] != null) {
+                          SOS_ID = documentSS['SOS_ID'];
+                          Map data1 = new HashMap<String, List<String>>();
+                          SOS_UID
+                              .document(SOS_ID)
+                              .get()
+                              .then((documentSS) {
+                            if (documentSS.exists)
+                              if (documentSS['Trip'] != null) {
+                                list2 = List.from(documentSS['Trip']);
+                                if (!list2.contains(UID)) {
+                                  list2.add(UID);
+                                  data1.putIfAbsent('Trip', () => list2);
+                                  Firestore.instance
+                                      .collection('SOS')
+                                      .document(SOS_ID)
+                                      .updateData(
+                                      data1).then((val) {
+                                    Fluttertoast.showToast(
+                                        msg: 'Successfully Joined');
+                                  });
+                                }
+                                else {
+                                  Fluttertoast.showToast(
+                                      msg: 'Already in the Trip!');
+                                }
+                              }
+                              else {
+                                Fluttertoast.showToast(
+                                    msg: 'Create Trip Again!');
+                                return;
+                              }
+                          });
+                        }
+                        else {
+                          Fluttertoast.showToast(msg: 'Can\'t Join This Trip!');
+                        }
+                      }
+                    });
+                  }
+                },
+                  child: Text('Join Trip', style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500
+                  ),),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 8.0, right: 8, top: 8, bottom: 30),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: RaisedButton(elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  onPressed: () {
+                    User_UID.document(UID).get().then((documentSS) {
+                      if (documentSS.exists) {
+                        if (documentSS['SOS_ID'] != null) {
+                          SOS_ID = documentSS['SOS_ID'];
+                          Map data1 = new HashMap<String, List<String>>();
+                          Firestore.instance
+                              .collection('SOS')
+                              .document(SOS_ID)
+                              .get()
+                              .then((documentSS) {
+                            if (documentSS.exists) {
+                              list3 = List.from(documentSS['Trip']);
+                              if (list3.isEmpty) {
+                                Fluttertoast.showToast(
+                                    msg: 'First Start a Trip!');
+                                return;
+                              }
+                              list3 = [];
+                              data1.putIfAbsent('Trip', () => list3);
                               Firestore.instance
                                   .collection('SOS')
                                   .document(SOS_ID)
                                   .updateData(
                                   data1).then((val) {
-                                Fluttertoast.showToast(
-                                    msg: 'Successfully Joined');
+                                Fluttertoast.showToast(msg: 'Trip Finished');
+                                setState(() {
+                                  qrFlag = false;
+                                });
                               });
                             }
-                            else{
-                              Fluttertoast.showToast(msg: 'Already in the Trip!');
-                            }
-                          }
-                          else {
-                            Fluttertoast.showToast(msg: 'Create Trip Again!');
-                            return;
-                          }
-                      });
-                    }
-                    else {
-                      Fluttertoast.showToast(msg: 'Can\'t Join This Trip!');
-                    }
-                  }
-                });
-              }
-            },
-              child: Text('Join Trip'),
-            ),
-            RaisedButton(onPressed: () {
-              User_UID.document(UID).get().then((documentSS) {
-                if (documentSS.exists) {
-                  if (documentSS['SOS_ID'] != null) {
-                    SOS_ID = documentSS['SOS_ID'];
-                    Map data1 = new HashMap<String, List<String>>();
-                    Firestore.instance
-                        .collection('SOS')
-                        .document(SOS_ID)
-                        .get()
-                        .then((documentSS) {
-                      if (documentSS.exists) {
-                        list3 = List.from(documentSS['Trip']);
-                        if (list3.isEmpty) {
-                          Fluttertoast.showToast(msg: 'First Start a Trip!');
-                          return;
-                        }
-                        list3 = [];
-                        data1.putIfAbsent('Trip', () => list3);
-                        Firestore.instance
-                            .collection('SOS')
-                            .document(SOS_ID)
-                            .updateData(
-                            data1).then((val) {
-                          Fluttertoast.showToast(msg: 'Trip Finished');
-                          setState(() {
-                            qrFlag = false;
                           });
-                        });
+                        }
+                        else {
+                          Fluttertoast.showToast(msg: 'Can\'t Finish!');
+                        }
                       }
                     });
-                  }
-                  else {
-                    Fluttertoast.showToast(msg: 'Can\'t Finish!');
-                  }
-                }
-              });
-            },
-              child: Text('Finish Trip'),
+                  },
+                  child: Text('Finish Trip', style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500
+                  ),),
 
+                ),
+              ),
             )
             ,
           ],
@@ -463,6 +533,9 @@ class _Home extends State<Home>{
 
   Widget cardB() {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       color: Colors.red.shade900,
       child: Column(
         children: <Widget>[
@@ -482,10 +555,15 @@ class _Home extends State<Home>{
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              width: 130,
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              height: 50, width: double.infinity,
               child: RaisedButton(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                color: Colors.white,
                 onPressed: () async {
                   setState(() {
                     flag3 = true;
@@ -496,7 +574,10 @@ class _Home extends State<Home>{
                     flag = true;
                   });
                 },
-                child: Text('Get Location'),
+                child: Text('Get Location', style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500
+                ),),
               ),
             ),
           ),
@@ -524,6 +605,22 @@ class _Home extends State<Home>{
           Stack(
             alignment: Alignment.center,
             children: <Widget>[
+              Container(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                    icon: Icon(Icons.share,
+                      color: Colors.white,
+                      size: 32,),
+                    tooltip: 'Share',
+                    splashColor: temp1 ? Colors.white : Colors.red.shade900,
+                    highlightColor: temp1 ? Colors.white : Colors.red
+                        .shade900,
+                    onPressed: () {
+                      Share.share(
+                          'http://www.google.com/maps/place/$lat,$long');
+                    }
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -538,8 +635,7 @@ class _Home extends State<Home>{
                           description: 'Your car is here!',
                         );
                       }
-                      else
-                      if (await MapLauncher.isMapAvailable(MapType.apple)) {
+                      else if (await MapLauncher.isMapAvailable(MapType.apple)) {
                         await MapLauncher.launchMap(
                           mapType: MapType.apple,
                           coords: Coords(lat, long),

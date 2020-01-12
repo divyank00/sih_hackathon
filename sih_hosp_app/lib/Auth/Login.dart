@@ -13,7 +13,6 @@ import 'package:sih_hackathon/Info/CInfo.dart';
 import 'package:sih_hackathon/Info/MInfo.dart';
 import 'package:sih_hackathon/Info/PInfo.dart';
 import 'package:sih_hackathon/Screens/Home.dart';
-import 'package:sih_hackathon/Screens/HomeH.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -87,14 +86,6 @@ class _Login extends State<Login> {
         .signInWithEmailAndPassword(email: mail, password: password)
         .then((authResult) async {
       FirebaseUser user = await _firebaseAuth.currentUser();
-      Firestore.instance.collection('Hospitals').document(user.uid).get().then((val){
-        if(val.exists){
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-                return HomeH();
-              }));
-        }
-      });
       FirebaseMessaging message = new FirebaseMessaging();
       var token = await message.getToken();
       Map data = new HashMap<String, String>();
@@ -371,7 +362,7 @@ class _Login extends State<Login> {
               ),
               Padding(
                 padding: EdgeInsets.only(
-                    top: 30, left: 20, right: 20, bottom: 30),
+                    top: 50, left: 20, right: 20, bottom: 30),
                 child: SizedBox(
                   width: double.infinity,
                   height: 50,
