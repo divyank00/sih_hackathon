@@ -38,6 +38,7 @@ dependencies:
   audio_service:
   audioplayers:
   share:
+  qr_flutter:
 
 dev_dependencies:
   flutter_test:

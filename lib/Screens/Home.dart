@@ -3,14 +3,17 @@ import 'dart:collection';
 
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:map_launcher/map_launcher.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:sih_hackathon/Auth/Login.dart';
 
 class Home extends StatefulWidget{
@@ -37,15 +40,18 @@ class _Home extends State<Home>{
 
   double long, lat;
 
-  String user1;
   List<String> list = [];
+  List<String> list1 = [];
+  List<String> list2 = [];
+  List<String> list3 = [];
 
   List<Placemark> placemark;
 
   Placemark location;
 
-  bool flag, flag1, flag2, flag3, temp, temp1;
+  bool flag, flag1, flag2, flag3, temp, temp1, qrFlag;
 
+  String result, SOS_ID;
 
   String localFilePath;
 
@@ -65,7 +71,9 @@ class _Home extends State<Home>{
   void initState() {
     // TODO: implement initState
     super.initState();
+    qrFlag = false;
     temp = false;
+    result = '';
     temp1 = true;
     flag = false;
     flag1 = false;
@@ -243,10 +251,181 @@ class _Home extends State<Home>{
             SizedBox(
               height: 0,
             ),
+            RaisedButton(onPressed: () {
+              User_UID.document(UID).get().then((documentSS) {
+                if (documentSS.exists) {
+                  if (documentSS['SOS_ID'] != null) {
+                    SOS_ID = documentSS['SOS_ID'];
+                    Map data1 = new HashMap<String, List<String>>();
+                    Firestore.instance
+                        .collection('SOS')
+                        .document(SOS_ID)
+                        .get()
+                        .then((documentSS) {
+                      if (documentSS.exists)
+                        list1 = [];
+                      list1.add(UID);
+                      data1.putIfAbsent('Trip', () => list1);
+                      Firestore.instance
+                          .collection('SOS')
+                          .document(SOS_ID)
+                          .updateData(
+                          data1).then((val) {
+                        Fluttertoast.showToast(msg: 'Successfully Started!');
+                        setState(() {
+                          qrFlag = true;
+                        });
+                      });
+                    });
+                  }
+                  else {
+                    Fluttertoast.showToast(msg: 'Can\'t Start a Trip!');
+                  }
+                }
+              });
+            },
+              child: Text('Start Trip'),
+
+            ),
+            qrFlag ? QrImage(
+              data: UID,
+              size: 200,
+              version: QrVersions.auto,
+            ) : SizedBox(
+              height: 0,
+            ),
+            RaisedButton(onPressed: () async {
+              await _scanQR();
+              bool val = await isIDValid(result);
+              if (val == false)
+                Fluttertoast.showToast(msg: 'Can\'t Join');
+              else {
+                User_UID.document(result).get().then((documentSS) {
+                  if (documentSS.exists) {
+                    if (documentSS['SOS_ID'] != null) {
+                      SOS_ID = documentSS['SOS_ID'];
+                      Map data1 = new HashMap<String, List<String>>();
+                      SOS_UID
+                          .document(SOS_ID)
+                          .get()
+                          .then((documentSS) {
+                        if (documentSS.exists)
+                          if (documentSS['Trip'] != null) {
+                            list2 = List.from(documentSS['Trip']);
+                            if (!list2.contains(UID)) {
+                              list2.add(UID);
+                              data1.putIfAbsent('Trip', () => list2);
+                              Firestore.instance
+                                  .collection('SOS')
+                                  .document(SOS_ID)
+                                  .updateData(
+                                  data1).then((val) {
+                                Fluttertoast.showToast(
+                                    msg: 'Successfully Joined');
+                              });
+                            }
+                            else{
+                              Fluttertoast.showToast(msg: 'Already in the Trip!');
+                            }
+                          }
+                          else {
+                            Fluttertoast.showToast(msg: 'Create Trip Again!');
+                            return;
+                          }
+                      });
+                    }
+                    else {
+                      Fluttertoast.showToast(msg: 'Can\'t Join This Trip!');
+                    }
+                  }
+                });
+              }
+            },
+              child: Text('Join Trip'),
+            ),
+            RaisedButton(onPressed: () {
+              User_UID.document(UID).get().then((documentSS) {
+                if (documentSS.exists) {
+                  if (documentSS['SOS_ID'] != null) {
+                    SOS_ID = documentSS['SOS_ID'];
+                    Map data1 = new HashMap<String, List<String>>();
+                    Firestore.instance
+                        .collection('SOS')
+                        .document(SOS_ID)
+                        .get()
+                        .then((documentSS) {
+                      if (documentSS.exists) {
+                        list3 = List.from(documentSS['Trip']);
+                        if (list3.isEmpty) {
+                          Fluttertoast.showToast(msg: 'First Start a Trip!');
+                          return;
+                        }
+                        list3 = [];
+                        data1.putIfAbsent('Trip', () => list3);
+                        Firestore.instance
+                            .collection('SOS')
+                            .document(SOS_ID)
+                            .updateData(
+                            data1).then((val) {
+                          Fluttertoast.showToast(msg: 'Trip Finished');
+                          setState(() {
+                            qrFlag = false;
+                          });
+                        });
+                      }
+                    });
+                  }
+                  else {
+                    Fluttertoast.showToast(msg: 'Can\'t Finish!');
+                  }
+                }
+              });
+            },
+              child: Text('Finish Trip'),
+
+            )
+            ,
           ],
-        ),
-      ),
+        )
+        ,
+      )
+      ,
     );
+  }
+
+  Future<bool> isIDValid(String result) async {
+    bool val;
+    await User_UID.document(result).get().then((SS) {
+      if (SS['SOS_ID'] != null)
+        val = true;
+      else
+        val = false;
+    });
+    return val;
+  }
+
+  Future _scanQR() async {
+    try {
+      result = await BarcodeScanner.scan();
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.CameraAccessDenied) {
+        Fluttertoast.showToast(msg: 'Camera permission was denied!',
+            toastLength: Toast.LENGTH_LONG,
+            timeInSecForIos: 2);
+      }
+      else
+        Fluttertoast.showToast(msg: 'Unknown Error: $e',
+            toastLength: Toast.LENGTH_LONG,
+            timeInSecForIos: 2);
+    } on FormatException {
+      Fluttertoast.showToast(
+          msg: 'You pressed the back button before scanning anything!',
+          toastLength: Toast.LENGTH_LONG, timeInSecForIos: 2);
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Unknown Error: $e',
+          toastLength: Toast.LENGTH_LONG,
+          timeInSecForIos: 2);
+    }
   }
 
   Future<FirebaseUser> getUID() async {
